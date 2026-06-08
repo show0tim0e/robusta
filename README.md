@@ -1,10 +1,25 @@
-# JS2: Entwicklung eines Frameworks für Vulnerability Scans auf Machine Learning und Deep Learning Modelle
+# Entwicklung eines Frameworks für Vulnerability Scans auf Machine Learning und Deep Learning Modelle
 
 ## Beschreibung
-...
+VL Scanner ist ein modulares System für die Analyse der Robustheit von PyTorch-Modellen gegenüber adversarial attacks im Bereich Bildklassifikation.
 
-## Grafiken
-...
+## Projektstruktur
+```text
+vl_scanner/
+├── core/
+│   ├── model.py
+│   ├── dataset.py
+│   └── scanner.py
+├── assessment/
+│   ├── evaluator.py
+│   └── report.py
+├── attacks/
+	├── base.py
+	├── fgsm.py
+	└── pgd.py
+└── ui/
+	└── app.py
+```
 
 ## Installation
 ### Voraussetzungen
@@ -25,7 +40,9 @@ python3 -m venv .venv
 
 ### 3. Virtuelle Umgebung aktivieren
 ```bash
-source .venv/bin/activate
+PowerShell: .\.venv\Scripts\Activate.ps1
+cmd: .venv\Scripts\activate.bat
+Linux/macOS: source .venv/bin/activate
 ```
 
 ### 4. Abhängigkeiten installieren
@@ -39,15 +56,12 @@ pip install -r requirements.txt
 python main.py
 ```
 
-## Verwendung
-...
-
-## Roadmap
+## Beispiel
 ...
 
 ## Autoren
-Miran: 1  
-Kilian: 2  
-Hassan: 3  
-Cedrik: 4  
-Tim: 5
+Miran  
+Kilian  
+Hassan  
+Cedrik  
+Tim  
