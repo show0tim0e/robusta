@@ -1,6 +1,3 @@
-from typing import Optional
-
-
 def run_app() -> int:
     import textual
 

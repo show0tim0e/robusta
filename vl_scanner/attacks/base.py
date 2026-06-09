@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any, TypedDict
 
 from torch import Tensor
 from torch.nn import Module
@@ -10,5 +11,9 @@ class Attack(ABC):
         pass
 
     @abstractmethod
-    def generate(self, model: Module, x: Tensor, y: Tensor | None = None) -> Tensor:
+    def get_params(self) -> dict[str,Any]:
+        pass
+
+    @abstractmethod
+    def generate(self, model: Module, x: Tensor, y: Tensor, params: dict[str,Any]) -> Tensor:
         pass
