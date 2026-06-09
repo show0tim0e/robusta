@@ -11,7 +11,7 @@ from .model import Model
 class Scanner:
     model: Model
     dataset: Dataset
-    attacks: Sequence[Attack] = field(default_factory=tuple)
+    attacks: Sequence[type[Attack]] = field(default_factory=tuple)
 
     def run(self) -> dict[str, float]:
         pass

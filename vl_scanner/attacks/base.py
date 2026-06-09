@@ -17,26 +17,27 @@ class AttackParameter:
 
 
 class Attack(ABC):
-    @property
+    @staticmethod
     @abstractmethod
-    def name(self) -> str:
+    def name() -> str:
         """The display name of the attack."""
         pass
 
-    @property
+    @staticmethod
     @abstractmethod
-    def description(self) -> str:
+    def description() -> str:
         """A detailed description of the attack."""
         pass
 
-    @property
+    @staticmethod
     @abstractmethod
-    def attack_parameters(self) -> list[AttackParameter]:
+    def attack_parameters() -> list[AttackParameter]:
         """A list of parameters for the attack, used for UI generation."""
         pass
 
+    @staticmethod
     @abstractmethod
-    def generate(self, model: Module, x: Tensor, y: Tensor, **kwargs: Any) -> Tensor:
+    def generate(model: Module, x: Tensor, y: Tensor, **kwargs: Any) -> Tensor:
         """
         Generates adversarial examples.
         """
