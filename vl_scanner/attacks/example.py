@@ -11,28 +11,28 @@ class ExampleAttack(Attack):
     An example attack class to demonstrate how to implement the interface.
     """
 
-    @property
-    def name(self) -> str:
+    @staticmethod
+    def name() -> str:
         return "Example Attack"
 
-    @property
-    def description(self) -> str:
+    @staticmethod
+    def description() -> str:
         return (
             "This is a demonstration attack. It showcases how to define "
             "mandatory parameters (epsilon, alpha) and optional parameters (delta) "
             "that the UI can dynamically render."
         )
 
-    @property
-    def attack_parameters(self) -> list[AttackParameter]:
+    @staticmethod
+    def attack_parameters() -> list[AttackParameter]:
         return [
             AttackParameter(name="epsilon", type=float, default=0.03),
             AttackParameter(name="num_iter", type=int, default=10),
             AttackParameter(name="delta", type=float, default=None, optional=True),
         ]
 
+    @staticmethod
     def generate(
-        self,
         model: Module,
         x: Tensor,
         y: Tensor,
@@ -41,7 +41,7 @@ class ExampleAttack(Attack):
         delta: float | None = None,
         **kwargs: Any,
     ) -> Tensor:
-        print(f"Running {self.name} with:")
+        print(f"Running {ExampleAttack.name()} with:")
         print(f" - epsilon: {epsilon}")
         print(f" - num_iter: {num_iter}")
         print(
@@ -51,9 +51,9 @@ class ExampleAttack(Attack):
 
 
 if __name__ == "__main__":
-    attack = ExampleAttack()
+    # No instantiation needed for static methods
     user_input = {
         "epsilon": 0.05,
         "num_iter": 20,
     }
-    attack.generate(Module(), zeros(1), zeros(1), **user_input)
+    ExampleAttack.generate(Module(), zeros(1), zeros(1), **user_input)
