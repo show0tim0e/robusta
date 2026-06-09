@@ -11,6 +11,10 @@ class Attack(ABC):
         pass
 
     @abstractmethod
+    def description(self) -> str:
+        pass
+
+    @abstractmethod
     def get_params(self) -> dict[str,Any]:
         pass
 
