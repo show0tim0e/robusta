@@ -1,10 +1,12 @@
 from typing import Any
 
-from torch import Tensor
+from torch import tensor, nn, optim
 from torch.nn import Module
 
 from .base import Attack, AttackParameter
 
+from art.estimators.classification import PyTorchClassifier
+from art.attacks.evasion import FastGradientMethod
 
 class FGSM(Attack):
     @staticmethod
@@ -21,6 +23,27 @@ class FGSM(Attack):
 
     @staticmethod
     def generate(
-        model: Module, x: Tensor, y: Tensor, epsilon: float = 0.03, **kwargs: Any
-    ) -> Tensor:
-        return x
+        model: Module,
+            x: tensor,
+            y: tensor,
+            epsilon: float = 0.03,
+            nb_classes: int = 10, # Anzahl an Ausgabeklassen für das Modell
+            **kwargs: Any
+    ) -> tensor:
+        classifier = PyTorchClassifier(
+            model=model,
+            loss=nn.CrossEntropyLoss(),
+            optimizer=optim.Adam(model.parameters(), lr=0.01),
+            input_shape=x.shape[1:],
+            nb_classes=nb_classes
+        )
+
+        attack = FastGradientMethod(
+            estimator=classifier,
+            eps=epsilon
+        )
+
+        x_np = x.detach().cpu().numpy()
+
+        x_adv = attack.generate(x=x_np)
+        return tensor(x_adv, dtype=x.dtype, device=x.device)

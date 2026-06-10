@@ -1,3 +1,4 @@
 torch
 textual
 ruff
+art
