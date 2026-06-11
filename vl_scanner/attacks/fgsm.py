@@ -1,6 +1,6 @@
 from typing import Any
 
-from torch import tensor, nn, optim
+from torch import Tensor, nn, optim, torch
 from torch.nn import Module
 
 from .base import Attack, AttackParameter
@@ -24,12 +24,12 @@ class FGSM(Attack):
     @staticmethod
     def generate(
         model: Module,
-            x: tensor,
-            y: tensor,
+            x: Tensor,
+            y: Tensor,
             epsilon: float = 0.03,
             nb_classes: int = 10, # Anzahl an Ausgabeklassen für das Modell
             **kwargs: Any
-    ) -> tensor:
+    ) -> Tensor:
         classifier = PyTorchClassifier(
             model=model,
             loss=nn.CrossEntropyLoss(),
@@ -45,5 +45,5 @@ class FGSM(Attack):
 
         x_np = x.detach().cpu().numpy()
 
-        x_adv = attack.generate(x=x_np)
-        return tensor(x_adv, dtype=x.dtype, device=x.device)
+        x_adv = attack.generate(x=x_np, y=y.detach().cpu().numpy())
+        return torch.from_numpy(x_adv).to(dtype=x.dtype, device=x.device)
