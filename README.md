@@ -56,8 +56,15 @@ pip install -r requirements.txt
 python main.py
 ```
 
-## Beispiel
-...
+## Beispiele
+
+| Dataset | Modell | Erwartung |
+|-|-|-|
+| MNIST | ResNet18 (ImageNet-pretrained, 1-Kanal adaptiert, 10 Klassen) | Pipeline-Test, sehr hohe FGSM/PGD Anfälligkeit, eingeschränkte semantische Aussagekraft |
+| CIFAR-10 | ResNet18 (ImageNet-pretrained, 3-Kanal, 10 Klassen) | Standard Benchmark für adversarial robustness |
+| CIFAR-100 | ResNet18 (ImageNet-pretrained, 3-Kanal, 100 Klassen) | Schwieriger Benchmark mit höherer Fehlklassifikationsrate unter Angriffen |
+
+> Hinweis: Alle Modelle nutzen denselben ResNet18 Backbone mit ImageNet-pretrained Gewichten. Unterschiede ergeben sich ausschließlich durch Input-Adaptation und die finale Klassifikationsschicht.
 
 ## Autoren
 Miran  

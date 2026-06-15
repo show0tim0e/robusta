@@ -216,3 +216,19 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+
+
+
+
+# Examples
+examples/datasets/**/
+examples/models/**/
+
+# keep python scripts in examples
+!examples/datasets/*.py
+!examples/models/*.py
+
+# prevent model weights
+*.pth
+*.pt
