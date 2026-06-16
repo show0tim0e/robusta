@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Type
+from typing import Any
 
 from torch import Tensor
 from torch.nn import Module
@@ -11,7 +11,7 @@ class AttackParameter:
     """Defines a parameter that the UI should collect for an attack."""
 
     name: str
-    type: Type
+    type: type
     default: Any = None
     optional: bool = False
 

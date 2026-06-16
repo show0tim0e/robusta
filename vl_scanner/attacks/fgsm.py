@@ -20,7 +20,11 @@ class FGSM(Attack):
 
     @staticmethod
     def generate(
-        model: Module, x: Tensor, y: Tensor, epsilon: float = 0.03, **kwargs: Any
+        model: Module,
+            x: Tensor,
+            y: Tensor,
+            epsilon: float = 0.03,
+            **kwargs: Any
     ) -> Tensor:
         from art.attacks.evasion import FastGradientMethod
         from art.estimators.classification import PyTorchClassifier
@@ -30,7 +34,7 @@ class FGSM(Attack):
             loss=nn.CrossEntropyLoss(),
             optimizer=optim.Adam(model.parameters(), lr=0.01),
             input_shape=x.shape[1:],
-            nb_classes=y.shape[1] if y.ndim > 1 else int(y.max()) + 1,
+            nb_classes=y.shape[1] if y.ndim > 1 else int(y.max()) + 1
         )
 
         attack = FastGradientMethod(
