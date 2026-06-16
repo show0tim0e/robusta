@@ -1,4 +1,5 @@
-def run_app() -> int:
-    import textual
+from textual.app import App
 
-    return 0
+
+class VLScannerApp(App):
+    pass

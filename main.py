@@ -1,8 +1,9 @@
-def main() -> int:
-    from vl_scanner.ui.app import run_app
+from vl_scanner.ui import VLScannerApp
 
-    return run_app()
 
+def main():
+    app = VLScannerApp()
+    app.run()
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    main()
