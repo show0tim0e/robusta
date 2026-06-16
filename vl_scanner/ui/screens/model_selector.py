@@ -37,13 +37,14 @@ class ModelSelectorScreen(BaseScreen):
     def on_mount(self) -> None:
         """Set the border title and default focus on mount."""
         self.query_one("#model-selector-box").border_title = "Select Model"
+        path_input = self.query_one("#path-input", Input)
+        path_input.border_title = "Path"
         self.query_one("#model-tree").focus()
 
     def compose(self) -> ComposeResult:
         yield from super().compose()
         with Container(id="model-selector-box"):
             with Vertical():
-                yield Label("Path:")
                 yield Input(
                     placeholder="Enter path to model...",
                     id="path-input",
