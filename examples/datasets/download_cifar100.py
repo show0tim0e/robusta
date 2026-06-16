@@ -1,6 +1,7 @@
 import os
-from torchvision.datasets import CIFAR100
+
 from torchvision import transforms
+from torchvision.datasets import CIFAR100
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "cifar100")

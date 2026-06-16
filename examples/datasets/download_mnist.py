@@ -1,6 +1,7 @@
 import os
-from torchvision.datasets import MNIST
+
 from torchvision import transforms
+from torchvision.datasets import MNIST
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "mnist")

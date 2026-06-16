@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 
 class Evaluator:
@@ -8,5 +8,5 @@ class Evaluator:
         x: Any,
         y: Any,
         adv_x: Any = None,
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         pass

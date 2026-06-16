@@ -23,7 +23,7 @@ vl_scanner/
 
 ## Installation
 ### Voraussetzungen
-- Python 3.13 oder neuer
+- Python 3.12 oder neuer
 - Git
 
 ### 1. Repository klonen

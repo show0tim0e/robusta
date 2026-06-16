@@ -1,7 +1,7 @@
 [project]
 name = "js2"
 version = "0.1.0"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "adversarial-robustness-toolbox>=1.20.1",
     "pytest>=9.1.0",
@@ -9,4 +9,17 @@ dependencies = [
     "textual>=8.2.7",
     "torch>=2.12.0",
     "torchvision>=0.27.0",
+]
+
+[tool.ruff]
+line-length = 1000
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "B",
+    "UP"
 ]

@@ -1,12 +1,12 @@
 from typing import Any
 
+from art.attacks.evasion import FastGradientMethod
+from art.estimators.classification import PyTorchClassifier
 from torch import Tensor, nn, optim, torch
 from torch.nn import Module
 
 from .base import Attack, AttackParameter
 
-from art.estimators.classification import PyTorchClassifier
-from art.attacks.evasion import FastGradientMethod
 
 class FGSM(Attack):
     @staticmethod
