@@ -23,7 +23,7 @@ vl_scanner/
 
 ## Installation
 ### Voraussetzungen
-- Python 3.10 oder neuer
+- Python 3.13 oder neuer
 - Git
 
 ### 1. Repository klonen
@@ -33,28 +33,53 @@ cd js2
 git switch dev
 ```
 
-### 2. Virtuelle Umgebung erstellen
+### 2. Projekt ausführen & testen
+
+<details>
+<summary><b>Verwendung mit uv (empfohlen)</b></summary>
+
+[uv](https://docs.astral.sh/uv/) ist ein extrem schneller Python-Paketmanager. Bei Verwendung von `uv run` wird die Umgebung automatisch synchronisiert.
+
+**Projekt starten:**
+```bash
+uv run main.py
+```
+
+**Tests ausführen:**
+```bash
+uv run pytest
+```
+</details>
+
+<details>
+<summary><b>Verwendung mit pip</b></summary>
+
+**Virtuelle Umgebung erstellen:**
 ```bash
 python3 -m venv .venv
 ```
 
-### 3. Virtuelle Umgebung aktivieren
-```bash
-PowerShell: .\.venv\Scripts\Activate.ps1
-cmd: .venv\Scripts\activate.bat
-Linux/macOS: source .venv/bin/activate
-```
+**Virtuelle Umgebung aktivieren:**
+- **Linux/macOS:** `source .venv/bin/activate`
+- **Windows PowerShell:** `.\.venv\Scripts\Activate.ps1`
+- **Windows cmd:** `.venv\Scripts\activate.bat`
 
-### 4. Abhängigkeiten installieren
+**Abhängigkeiten installieren:**
 ```bash
-pip install --upgrade pip
-pip install -r requirements.txt
+pip install -e .
 ```
+*(Das `-e` Flag installiert das Projekt im "editable" Modus.)*
 
-### 5. Projekt starten
+**Projekt starten:**
 ```bash
 python main.py
 ```
+
+**Tests ausführen:**
+```bash
+pytest
+```
+</details>
 
 ## Beispiele
 

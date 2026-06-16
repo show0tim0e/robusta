@@ -1,5 +1,0 @@
-torch
-torchvision
-textual
-ruff
-adversarial-robustness-toolbox
