@@ -54,6 +54,7 @@ class ModelSelectorScreen(BaseScreen):
     def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected) -> None:
         """Called when a file is selected in the DirectoryTree."""
         self.query_one("#path-input", Input).value = str(event.path)
+        self.app.push_screen("AttackSelectorScreen")
 
     def on_directory_tree_directory_selected(
         self, event: DirectoryTree.DirectorySelected
@@ -70,6 +71,8 @@ class ModelSelectorScreen(BaseScreen):
                 tree.path = path
             else:
                 tree.path = path.parent
+                # If it's a file, we transition TODO: Check validity
+                self.app.push_screen("AttackSelectorScreen")
         else:
             # You could add a notification here for invalid paths
             pass
