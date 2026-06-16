@@ -35,8 +35,9 @@ class ModelSelectorScreen(BaseScreen):
     """
 
     def on_mount(self) -> None:
-        """Set the border title on mount."""
+        """Set the border title and default focus on mount."""
         self.query_one("#model-selector-box").border_title = "Select Model"
+        self.query_one("#model-tree").focus()
 
     def compose(self) -> ComposeResult:
         yield from super().compose()
