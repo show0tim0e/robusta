@@ -1,4 +1,5 @@
 from textual.app import ComposeResult
+
 from .base import BaseScreen
 
 

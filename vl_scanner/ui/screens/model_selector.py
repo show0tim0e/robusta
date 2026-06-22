@@ -2,7 +2,7 @@ from pathlib import Path
 
 from textual.app import ComposeResult
 from textual.containers import Container, Vertical
-from textual.widgets import DirectoryTree, Input, Label
+from textual.widgets import DirectoryTree, Input
 
 from .base import BaseScreen
 
@@ -77,3 +77,17 @@ class ModelSelectorScreen(BaseScreen):
         else:
             # You could add a notification here for invalid paths
             pass
+
+    def action_next(self) -> None:
+        """Handle Next button navigation by submitting the current path."""
+        path_input = self.query_one("#path-input", Input)
+        path = Path(path_input.value).expanduser().resolve()
+        if path.exists():
+            tree = self.query_one("#model-tree", DirectoryTree)
+            if path.is_dir():
+                tree.path = path
+            else:
+                tree.path = path.parent
+                self.app.push_screen("AttackSelectorScreen")
+        else:
+            self.notify("Invalid path. Please select a valid file or directory.", severity="error")

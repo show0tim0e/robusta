@@ -1,10 +1,12 @@
 from typing import Literal
+
 from textual.app import ComposeResult
 from textual.binding import Binding
-from textual.containers import Container, Vertical, Horizontal, VerticalScroll
-from textual.widgets import Label, Input, Button, SelectionList, ContentSwitcher
+from textual.containers import Container, Horizontal, Vertical, VerticalScroll
+from textual.widgets import ContentSwitcher, Input, Label, SelectionList
 
 from vl_scanner.attacks import ATTACK_REGISTRY
+
 from .base import BaseScreen
 
 
@@ -13,7 +15,7 @@ class AttackSelectorScreen(BaseScreen):
 
     BINDINGS = [
         Binding("p", "toggle_parameters", "Toggle Parameters", show=True),
-        Binding("enter", "start_attacks", "Start Attacks", show=True, priority=True),
+        Binding("enter", "start_attacks", "Start Attacks", show=True),
     ]
 
     DEFAULT_CSS = """
@@ -88,7 +90,7 @@ class AttackSelectorScreen(BaseScreen):
                     with VerticalScroll(id="parameter-view"):
                         yield Vertical(id="parameter-form-container")
 
-            with VerticalScroll(id="description-box"):
+            with VerticalScroll(id="description-box", can_focus=False):
                 yield Label("Select an attack to see its description.", id="attack-description")
 
     def on_selection_list_selection_highlighted(self, event: SelectionList.SelectionHighlighted) -> None:
@@ -106,6 +108,10 @@ class AttackSelectorScreen(BaseScreen):
             self.app.push_screen("AttackProgressScreen")
         else:
             self.notify("Please select at least one attack to proceed.", severity="error")
+
+    def action_next(self) -> None:
+        """Handle Next button navigation by starting the attacks."""
+        self.action_start_attacks()
 
     def action_toggle_parameters(self) -> None:
         """Switch to the parameter form for the highlighted attack."""

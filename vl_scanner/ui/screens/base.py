@@ -11,8 +11,7 @@ class BaseScreen(Screen):
     DEFAULT_CSS = """
     PageCounter {
         dock: bottom;
-        content-align: center middle;
-        height: 1;
+        height: 3;
         margin-bottom: 1;
     }
     """
