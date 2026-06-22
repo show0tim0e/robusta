@@ -1,9 +1,11 @@
 from typing import Any
 
+import numpy as np
 import torch
+from art.attacks.evasion import ProjectedGradientDescent
+from art.estimators.classification import PyTorchClassifier
 from torch import Tensor
 from torch.nn import Module
-from torch.nn import functional as F
 
 from .base import Attack, AttackParameter
 
@@ -35,23 +37,38 @@ class PGD(Attack):
         num_iter: int = 40,
         **kwargs: Any,
     ) -> Tensor:
-        x_adv = x.clone().detach()
+        device = next(model.parameters()).device
 
-        for i in range (num_iter):
-            x_adv.requires_grad = True
+        x_np = x.detach().cpu().numpy()
+        y_np = y.detach().cpu().numpy()
 
-            logits = model(x_adv)
-            loss = F.cross_entropy(logits, y)
+        with torch.no_grad():
+            n_classes = model(x[:1].to(device)).shape[-1]
 
-            model.zero_grad()
-            loss.backward()
+        classifier = PyTorchClassifier(
+            model=model,
+            loss=torch.nn.CrossEntropyLoss(),
+            input_shape=x_np.shape[1:],
+            nb_classes=n_classes,
+            clip_values=(0.0, 1.0),
+            device_type="gpu" if device.type == "cuda" else "cpu",
+        )
 
-            with torch.no_grad():
-                x_adv = x_adv + alpha * x_adv.grad.sign()
+        attack = ProjectedGradientDescent(
+            estimator=classifier,
+            eps=epsilon,
+            eps_step=alpha,
+            max_iter=num_iter,
+            targeted=False,
+            norm="inf",
+        )
 
-                delta = torch.clamp(x_adv - x, min=-epsilon, max=epsilon)
-                x_adv = torch.clamp(x + delta, min=0.0, max=1.0).detach()
+        if y_np.ndim == 1:
+            y_onehot = np.eye(n_classes)[y_np]
+        else:
+            y_onehot = y_np
 
-        return x_adv
+        x_adv_np = attack.generate(x=x_np, y=y_onehot)
 
+        return torch.from_numpy(x_adv_np).to(device=device, dtype=x.dtype)
 

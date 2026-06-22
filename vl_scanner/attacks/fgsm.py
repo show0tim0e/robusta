@@ -1,9 +1,9 @@
 from typing import Any
 
-import torch
-from torch import Tensor
+from art.attacks.evasion import FastGradientMethod
+from art.estimators.classification import PyTorchClassifier
+from torch import Tensor, nn, optim, torch
 from torch.nn import Module
-from torch.nn import functional as F
 
 from .base import Attack, AttackParameter
 
@@ -29,17 +29,21 @@ class FGSM(Attack):
             epsilon: float = 0.03,
             **kwargs: Any
     ) -> Tensor:
-        y = y.long()
-        x_adv = x.clone().detach().requires_grad_(True)
 
-        logits = model(x_adv)
-        loss = F.cross_entropy(logits, y)
+        classifier = PyTorchClassifier(
+            model=model,
+            loss=nn.CrossEntropyLoss(),
+            optimizer=optim.Adam(model.parameters(), lr=0.01),
+            input_shape=x.shape[1:],
+            nb_classes=y.shape[1] if y.ndim > 1 else int(y.max()) + 1
+        )
 
-        model.zero_grad()
-        loss.backward()
+        attack = FastGradientMethod(
+            estimator=classifier,
+            eps=epsilon
+        )
 
-        with torch.no_grad():
-            x_adv = x + epsilon * x_adv.grad.sign()
-            x_adv = torch.clamp(x_adv, min=0.0, max=1.0)
+        x_np = x.detach().cpu().numpy()
 
-        return x_adv
+        x_adv = attack.generate(x=x_np, y=y.detach().cpu().numpy())
+        return torch.from_numpy(x_adv).to(dtype=x.dtype, device=x.device)
