@@ -101,10 +101,24 @@ class AttackSelectorScreen(BaseScreen):
 
     def action_start_attacks(self) -> None:
         """Proceed to the AttackProgressScreen if at least one attack is selected."""
+        self._save_current_parameters()
+        
         list_widget = self.query_one("#list-view", SelectionList)
         selected_attacks = list_widget.selected
         
         if selected_attacks:
+            # Initialize attack_parameters on app if not exists
+            if not hasattr(self.app, "attack_parameters"):
+                self.app.attack_parameters = {}
+                
+            # For any selected attack that has no parameters saved, populate with defaults
+            for attack_class in selected_attacks:
+                if attack_class not in self.app.attack_parameters:
+                    defaults = {p.name: p.default for p in attack_class.attack_parameters()}
+                    self.app.attack_parameters[attack_class] = defaults
+            
+            # Save selected attacks to app
+            self.app.selected_attacks = selected_attacks
             self.app.push_screen("AttackProgressScreen")
         else:
             self.notify("Please select at least one attack to proceed.", severity="error")
@@ -127,11 +141,45 @@ class AttackSelectorScreen(BaseScreen):
         else:
             self._switch_to_list()
 
+    def _save_current_parameters(self) -> None:
+        """Save the parameters from the form for the currently viewed attack."""
+        if not hasattr(self, "current_parameter_attack") or self.current_parameter_attack is None:
+            return
+            
+        attack_class = self.current_parameter_attack
+        params = attack_class.attack_parameters()
+        
+        param_values = {}
+        for param in params:
+            try:
+                inp = self.query_one(f"#param-{param.name}", Input)
+                value_str = inp.value.strip()
+                if not value_str:
+                    value = param.default
+                else:
+                    if param.type is float:
+                        value = float(value_str)
+                    elif param.type is int:
+                        value = int(value_str)
+                    else:
+                        value = value_str
+                param_values[param.name] = value
+            except Exception:
+                param_values[param.name] = param.default
+                
+        if not hasattr(self.app, "attack_parameters"):
+            self.app.attack_parameters = {}
+        self.app.attack_parameters[attack_class] = param_values
+
     def _build_parameter_form(self, attack_class) -> None:
         """Dynamically build the form for the selected attack's parameters."""
+        self._save_current_parameters()
+        self.current_parameter_attack = attack_class
+        
         container = self.query_one("#parameter-form-container", Vertical)
         container.query("*").remove()
         
+        saved_params = getattr(self.app, "attack_parameters", {}).get(attack_class, {})
         params = attack_class.attack_parameters()
         for param in params:
             input_type: Literal["integer", "number", "text"]
@@ -142,10 +190,13 @@ class AttackSelectorScreen(BaseScreen):
             else:
                 input_type = "text"
 
+            val = str(saved_params[param.name]) if param.name in saved_params else ""
+
             inp = Input(
                 placeholder=str(param.default),
                 id=f"param-{param.name}",
-                type=input_type
+                type=input_type,
+                value=val
             )
             inp.border_title = param.name
             row = Horizontal(inp, classes="parameter-row")
@@ -153,6 +204,9 @@ class AttackSelectorScreen(BaseScreen):
 
     def _switch_to_list(self) -> None:
         """Switch back to the attack list view."""
+        self._save_current_parameters()
+        self.current_parameter_attack = None
+        
         switcher = self.query_one(ContentSwitcher)
         switcher.current = "list-view"
         self.query_one("#attack-selector-box").border_title = "Select Attacks"

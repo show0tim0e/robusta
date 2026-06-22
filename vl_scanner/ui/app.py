@@ -1,11 +1,12 @@
 from textual.app import App
 
-from vl_scanner.ui.screens import AttackProgressScreen, AttackSelectorScreen, EvaluationScreen, ModelSelectorScreen
+from vl_scanner.ui.screens import AttackProgressScreen, AttackSelectorScreen, DatasetSelectorScreen, EvaluationScreen, ModelSelectorScreen
 
 
 class VLScannerApp(App):
     SCREENS = {
         "ModelSelectorScreen": ModelSelectorScreen,
+        "DatasetSelectorScreen": DatasetSelectorScreen,
         "AttackSelectorScreen": AttackSelectorScreen,
         "AttackProgressScreen": AttackProgressScreen,
         "EvaluationScreen": EvaluationScreen,

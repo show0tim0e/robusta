@@ -59,7 +59,7 @@ class PageCounter(Widget):
             current_index = -1
 
         back_disabled = current_index <= 0
-        next_disabled = current_index < 0 or current_index >= len(self.screen_order) - 1
+        next_disabled = current_index < 0 or current_index >= len(self.screen_order) - 1 or current_screen_name == "AttackProgressScreen"
 
         self.query_one("#back-button", Button).disabled = back_disabled
         self.query_one("#next-button", Button).disabled = next_disabled

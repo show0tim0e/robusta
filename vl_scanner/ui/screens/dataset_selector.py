@@ -7,11 +7,11 @@ from textual.widgets import DirectoryTree, Input
 from .base import BaseScreen
 
 
-class ModelSelectorScreen(BaseScreen):
-    """Screen for selecting a model file or directory."""
+class DatasetSelectorScreen(BaseScreen):
+    """Screen for selecting a dataset file."""
 
     DEFAULT_CSS = """
-    #model-selector-box {
+    #dataset-selector-box {
         border: round $primary;
         background: $surface;
         margin: 2 4;
@@ -19,16 +19,16 @@ class ModelSelectorScreen(BaseScreen):
         height: 100%;
     }
 
-    #model-selector-box Label {
+    #dataset-selector-box Label {
         margin-top: 1;
         text-style: bold;
     }
 
-    #path-input {
+    #dataset-path-input {
         border: round $primary;
     }
 
-    #model-tree {
+    #dataset-tree {
         margin-top: 1;
         height: 1fr;
     }
@@ -36,60 +36,57 @@ class ModelSelectorScreen(BaseScreen):
 
     def on_mount(self) -> None:
         """Set the border title and default focus on mount."""
-        self.query_one("#model-selector-box").border_title = "Select Model"
-        path_input = self.query_one("#path-input", Input)
+        self.query_one("#dataset-selector-box").border_title = "Select Dataset"
+        path_input = self.query_one("#dataset-path-input", Input)
         path_input.border_title = "Path"
-        self.query_one("#model-tree").focus()
+        self.query_one("#dataset-tree").focus()
 
     def compose(self) -> ComposeResult:
         yield from super().compose()
-        with Container(id="model-selector-box"):
+        with Container(id="dataset-selector-box"):
             with Vertical():
                 yield Input(
-                    placeholder="Enter path to model...",
-                    id="path-input",
+                    placeholder="Enter path to dataset...",
+                    id="dataset-path-input",
                     value=str(Path.cwd()),
                 )
-                yield DirectoryTree(Path.cwd(), id="model-tree")
+                yield DirectoryTree(Path.cwd(), id="dataset-tree")
 
     def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected) -> None:
         """Called when a file is selected in the DirectoryTree."""
-        self.query_one("#path-input", Input).value = str(event.path)
-        self.app.model_path = event.path
-        self.app.push_screen("DatasetSelectorScreen")
+        self.query_one("#dataset-path-input", Input).value = str(event.path)
+        self.app.dataset_path = event.path
+        self.app.push_screen("AttackSelectorScreen")
 
     def on_directory_tree_directory_selected(
         self, event: DirectoryTree.DirectorySelected
     ) -> None:
         """Called when a directory is selected in the DirectoryTree."""
-        self.query_one("#path-input", Input).value = str(event.path)
+        self.query_one("#dataset-path-input", Input).value = str(event.path)
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         """Called when the user presses enter in the path Input."""
         path = Path(event.value).expanduser().resolve()
         if path.exists():
-            tree = self.query_one("#model-tree", DirectoryTree)
+            tree = self.query_one("#dataset-tree", DirectoryTree)
             if path.is_dir():
                 tree.path = path
             else:
                 tree.path = path.parent
-                self.app.model_path = path
-                self.app.push_screen("DatasetSelectorScreen")
-        else:
-            # You could add a notification here for invalid paths
-            pass
+                self.app.dataset_path = path
+                self.app.push_screen("AttackSelectorScreen")
 
     def action_next(self) -> None:
         """Handle Next button navigation by submitting the current path."""
-        path_input = self.query_one("#path-input", Input)
+        path_input = self.query_one("#dataset-path-input", Input)
         path = Path(path_input.value).expanduser().resolve()
         if path.exists():
-            tree = self.query_one("#model-tree", DirectoryTree)
+            tree = self.query_one("#dataset-tree", DirectoryTree)
             if path.is_dir():
                 tree.path = path
             else:
                 tree.path = path.parent
-                self.app.model_path = path
-                self.app.push_screen("DatasetSelectorScreen")
+                self.app.dataset_path = path
+                self.app.push_screen("AttackSelectorScreen")
         else:
             self.notify("Invalid path. Please select a valid file or directory.", severity="error")
