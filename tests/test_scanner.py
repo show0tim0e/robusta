@@ -3,6 +3,7 @@
 from tests.datasets.test_mnist import _ensure_dataset_artifact
 from tests.models.test_resnet18_mnist import _ensure_model_checkpoint
 from vl_scanner.attacks.fgsm import FGSM
+from vl_scanner.attacks.pgd import PGD
 from vl_scanner.core.providers.dataset import DatasetProvider
 from vl_scanner.core.providers.model import ModelProvider
 from vl_scanner.core.scanner import AttackConfig, Scanner
@@ -14,6 +15,7 @@ def test_resnet18_mnist_scan():
         model=ModelProvider.load(_ensure_model_checkpoint()),
         attacks=[
             AttackConfig(attack=FGSM, params={"epsilon": 0.03}),
+            AttackConfig(attack=PGD, params={"epsilon": 0.03, "alpha": 0.01, "num_iter": 40}),
         ],
     )
 
