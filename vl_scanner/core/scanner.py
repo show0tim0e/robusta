@@ -1,17 +1,17 @@
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 
-from vl_scanner.attacks.base import Attack
+from torch import Tensor
+from torch.nn import Module
 
-from .dataset import Dataset
-from .model import Model
+from vl_scanner.attacks.base import Attack
 
 
 @dataclass(slots=True)
 class Scanner:
-    model: Model
-    dataset: Dataset
+    model: Module
+    dataset: tuple[Tensor, Tensor]
     attacks: Sequence[type[Attack]] = field(default_factory=tuple)
 
-    def run(self) -> dict[str, float]:
+    def run(self) -> None:
         pass

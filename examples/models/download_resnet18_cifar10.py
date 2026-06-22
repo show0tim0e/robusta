@@ -1,14 +1,38 @@
-import os
+#TODO
+from pathlib import Path
 
 import torch
 from torchvision import models
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_PATH = BASE_DIR / "resnet18_cifar10.pth"
+FORMAT_VERSION = 1
+FRAMEWORK = "pytorch"
+MODEL_TYPE = "image_classification"
+ARCHITECTURE = "resnet18"
+NUM_CLASSES = 10
+INPUT_CHANNELS = 3
 
-model = models.resnet18(weights="IMAGENET1K_V1")
-model.fc = torch.nn.Linear(model.fc.in_features, 10)
 
-MODEL_PATH = os.path.join(BASE_DIR, "resnet18_cifar10.pth")
-torch.save(model.state_dict(), MODEL_PATH)
+def download_resnet18_cifar10() -> str:
+    model = models.resnet18(weights=models.ResNet18_Weights.IMAGENET1K_V1)
+    model.fc = torch.nn.Linear(model.fc.in_features, NUM_CLASSES)
 
-print(f"ResNet18 CIFAR-10 model downloaded to {MODEL_PATH}")
+    torch.save(
+        {
+            "format_version": FORMAT_VERSION,
+            "framework": FRAMEWORK,
+            "model_type": MODEL_TYPE,
+            "architecture": ARCHITECTURE,
+            "num_classes": NUM_CLASSES,
+            "input_channels": INPUT_CHANNELS,
+            "state_dict": model.state_dict(),
+        },
+        MODEL_PATH,
+    )
+
+    return str(MODEL_PATH)
+
+
+if __name__ == "__main__":
+    print(f"ResNet18 CIFAR-10 model downloaded to {download_resnet18_cifar10()}")
