@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Any
 
 import torch
@@ -20,11 +19,15 @@ class HFImageClassifier(Module):
         outputs = self.model(pixel_values=x)
         return outputs.logits
 
+    @property
+    def config(self):
+        return self.model.config
+
 class ModelProvider:
 
     @staticmethod
     def load(
-        model_id: str | Path,
+        model_id: str,
         *,
         device: str | None = None,
         dtype: torch.dtype | None = None,

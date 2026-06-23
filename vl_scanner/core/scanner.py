@@ -20,12 +20,16 @@ class AttackResult:
     attack_params: dict[str, Any]
 
     x_adv: Tensor
-
-    pred: Tensor
     adv_pred: Tensor
-
-    confidence: Tensor
     adv_confidence: Tensor
+
+@dataclass(slots=True)
+class ScanResult:
+    x: Tensor
+    y: Tensor
+    pred: Tensor
+    confidence: Tensor
+    results: list[AttackResult]
 
 @dataclass(slots=True)
 class Scanner:
@@ -33,7 +37,7 @@ class Scanner:
     dataset: tuple[Tensor, Tensor]
     attacks: Sequence[AttackConfig] = field(default_factory=tuple)
 
-    def run(self) -> tuple[Tensor, Tensor, list[AttackResult]]:
+    def run(self) -> ScanResult:
         x, y = self.dataset
 
         device = next(self.model.parameters()).device
@@ -46,8 +50,8 @@ class Scanner:
         # normal image classification
         with torch.no_grad():
             logits = self.model(x)
-            probs = torch.softmax(logits, dim=1)
 
+            probs = torch.softmax(logits, dim=1)
             confidence, pred = probs.max(dim=1)
 
         results: list[AttackResult] = []
@@ -63,20 +67,25 @@ class Scanner:
 
             with torch.no_grad():
                 adv_logits = self.model(x_adv)
-                adv_probs = torch.softmax(adv_logits, dim=1)
 
+                adv_probs = torch.softmax(adv_logits, dim=1)
                 adv_confidence, adv_pred = adv_probs.max(dim=1)
 
             results.append(
                 AttackResult(
                     attack_name=attack_config.attack.name(),
-                    attack_params=attack_config.params,
-                    x_adv=x_adv,
-                    pred=pred,
-                    adv_pred=adv_pred,
-                    confidence=confidence,
-                    adv_confidence=adv_confidence
+                    attack_params=dict(attack_config.params),
+
+                    x_adv=x_adv.detach().cpu(),
+                    adv_pred=adv_pred.detach().cpu(),
+                    adv_confidence=adv_confidence.detach().cpu()
                 )
             )
 
-        return (x, y, results)
+        return ScanResult(
+            x=x.detach().cpu(),
+            y=y.detach().cpu(),
+            pred=pred.detach().cpu(),
+            confidence=confidence.detach().cpu(),
+            results=results
+        )

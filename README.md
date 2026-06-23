@@ -4,22 +4,7 @@
 VL Scanner ist ein modulares System für die Analyse der Robustheit von PyTorch-Modellen gegenüber adversarial attacks im Bereich Bildklassifikation.
 
 ## Projektstruktur
-```text
-vl_scanner/
-├── core/
-│   ├── model.py
-│   ├── dataset.py
-│   └── scanner.py
-├── assessment/
-│   ├── evaluator.py
-│   └── report.py
-├── attacks/
-	├── base.py
-	├── fgsm.py
-	└── pgd.py
-└── ui/
-	└── app.py
-```
+TODO
 
 ## Installation
 ### Voraussetzungen
@@ -85,11 +70,9 @@ pytest
 
 | Dataset | Modell | Erwartung |
 |-|-|-|
-| MNIST | ResNet18 (ImageNet-pretrained, 1-Kanal adaptiert, 10 Klassen) | Pipeline-Test, sehr hohe FGSM/PGD Anfälligkeit, eingeschränkte semantische Aussagekraft |
-| CIFAR-10 | ResNet18 (ImageNet-pretrained, 3-Kanal, 10 Klassen) | Standard Benchmark für adversarial robustness |
-| CIFAR-100 | ResNet18 (ImageNet-pretrained, 3-Kanal, 100 Klassen) | Schwieriger Benchmark mit höherer Fehlklassifikationsrate unter Angriffen |
-
-> Hinweis: Alle Modelle nutzen denselben ResNet18 Backbone mit ImageNet-pretrained Gewichten. Unterschiede ergeben sich ausschließlich durch Input-Adaptation und die finale Klassifikationsschicht.
+| https://huggingface.co/datasets/ylecun/mnist | https://huggingface.co/fxmarty/resnet-tiny-mnist | Pipeline-Test, sehr hohe FGSM/PGD Anfälligkeit, eingeschränkte semantische Aussagekraft |
+| CIFAR-10 | https://huggingface.co/nateraw/vit-base-patch16-224-cifar10 | Standard Benchmark für adversarial robustness |
+| CIFAR-100 | https://huggingface.co/Ahmed9275/Vit-Cifar100 | Schwieriger Benchmark mit höherer Fehlklassifikationsrate unter Angriffen |
 
 ## Autoren
 Miran  
