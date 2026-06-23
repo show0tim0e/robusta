@@ -71,8 +71,8 @@ pytest
 | Dataset | Modell | Erwartung |
 |-|-|-|
 | https://huggingface.co/datasets/ylecun/mnist | https://huggingface.co/fxmarty/resnet-tiny-mnist | Pipeline-Test, sehr hohe FGSM/PGD Anfälligkeit, eingeschränkte semantische Aussagekraft |
-| CIFAR-10 | https://huggingface.co/nateraw/vit-base-patch16-224-cifar10 | Standard Benchmark für adversarial robustness |
-| CIFAR-100 | https://huggingface.co/Ahmed9275/Vit-Cifar100 | Schwieriger Benchmark mit höherer Fehlklassifikationsrate unter Angriffen |
+| https://huggingface.co/datasets/uoft-cs/cifar10 | https://huggingface.co/nateraw/vit-base-patch16-224-cifar10 | Standard Benchmark für adversarial robustness |
+| https://huggingface.co/datasets/uoft-cs/cifar100 | https://huggingface.co/Ahmed9275/Vit-Cifar100 | Schwieriger Benchmark mit höherer Fehlklassifikationsrate unter Angriffen |
 
 ## Autoren
 Miran  

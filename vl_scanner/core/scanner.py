@@ -1,3 +1,4 @@
+import random
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from typing import Any
@@ -7,6 +8,8 @@ from torch import Tensor
 from torch.nn import Module
 
 from vl_scanner.attacks.base import Attack
+from vl_scanner.core.providers.dataset import DatasetProvider
+from vl_scanner.core.providers.model import ModelProvider
 
 
 @dataclass(slots=True, frozen=True)
@@ -33,13 +36,103 @@ class ScanResult:
 
 @dataclass(slots=True)
 class Scanner:
-    model: Module
-    dataset: tuple[Tensor, Tensor]
+    model: Module | None = None
+    processor: Any | None = None
+    dataset: tuple[Tensor, Tensor] | None = None
     attacks: Sequence[AttackConfig] = field(default_factory=tuple)
 
+    def set_model(
+        self,
+        model_id: str,
+        *,
+        device: str | None = None,
+        dtype: torch.dtype | None = None,
+        trust_remote_code: bool = False
+    ) -> bool:
+        try:
+            model, processor = ModelProvider.load(
+                model_id=model_id,
+                device=device,
+                dtype=dtype,
+                trust_remote_code=trust_remote_code
+            )
+        
+        except Exception:
+            return False
+        
+        self.model = model
+        self.processor = processor
+
+        return True
+    
+    def set_dataset(
+        self,
+        dataset_id: str,
+        *,
+        split: str = "test",
+        size: int | None = None
+    ) -> bool:
+        try:
+            dataset = DatasetProvider.load(
+                dataset_id=dataset_id,
+                split=split
+            )
+
+            if size is not None:
+                random_indices = random.sample(
+                    range(len(dataset)),
+                    size
+                )
+
+                dataset = dataset.select(random_indices)
+
+            images = DatasetProvider.get_images(dataset)
+            labels = DatasetProvider.get_labels(dataset)
+
+            if len(images) != len(labels):
+                return False
+            
+            if self.processor is None:
+                return False
+            
+            encoded = self.processor(
+                images=list(images),
+                return_tensors="pt",
+                do_normalize=True
+            )
+
+            x = encoded["pixel_values"]
+            y = torch.tensor(list(labels))
+        
+        except Exception:
+            return False
+
+        self.dataset = (x, y)
+
+        return True
+    
+    def set_attacks(
+        self,
+        attacks: Sequence[AttackConfig]
+    ) -> None:
+        self.attacks = tuple(attacks)
+
+    def ready(self) -> bool:
+        return (
+            self.model is not None and
+            self.processor is not None and
+            self.dataset is not None and
+            len(self.attacks) > 0
+        )
+
     def run(self) -> ScanResult:
+        if not self.ready():
+            raise RuntimeError("Scanner is not ready. Please set model, dataset, and attacks first.")
+
+        assert self.dataset is not None
         x, y = self.dataset
 
+        assert self.model is not None
         device = next(self.model.parameters()).device
 
         x = x.to(device)
