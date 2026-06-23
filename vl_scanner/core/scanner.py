@@ -17,10 +17,9 @@ class AttackConfig:
 @dataclass(slots=True)
 class AttackResult:
     attack_name: str
+    attack_params: dict[str, Any]
 
-    x: Tensor
     x_adv: Tensor
-    y: Tensor
 
     pred: Tensor
     adv_pred: Tensor
@@ -34,8 +33,13 @@ class Scanner:
     dataset: tuple[Tensor, Tensor]
     attacks: Sequence[AttackConfig] = field(default_factory=tuple)
 
-    def run(self) -> list[AttackResult]:
+    def run(self) -> tuple[Tensor, Tensor, list[AttackResult]]:
         x, y = self.dataset
+
+        device = next(self.model.parameters()).device
+
+        x = x.to(device)
+        y = y.to(device)
 
         self.model.eval()
 
@@ -63,17 +67,16 @@ class Scanner:
 
                 adv_confidence, adv_pred = adv_probs.max(dim=1)
 
-            result = AttackResult(
-                attack_name=attack_config.attack.name(),
-                x=x,
-                x_adv=x_adv,
-                y=y,
-                pred=pred,
-                adv_pred=adv_pred,
-                confidence=confidence,
-                adv_confidence=adv_confidence
+            results.append(
+                AttackResult(
+                    attack_name=attack_config.attack.name(),
+                    attack_params=attack_config.params,
+                    x_adv=x_adv,
+                    pred=pred,
+                    adv_pred=adv_pred,
+                    confidence=confidence,
+                    adv_confidence=adv_confidence
+                )
             )
 
-            results.append(result)
-
-        return results
+        return (x, y, results)

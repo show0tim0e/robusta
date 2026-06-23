@@ -1,45 +1,64 @@
 from pathlib import Path
+from typing import Any
 
 import torch
 from torch.nn import Module
-from transformers import AutoModelForImageClassification
+from transformers import AutoImageProcessor, AutoModelForImageClassification
 
-from vl_scanner.core.models.checkpoint import validate_checkpoint
-from vl_scanner.core.models.registry import ModelRegistry
 
+class HFImageClassifier(Module):
+    """
+    Adapter that makes Hugging Face image classification models
+    behave like a regular PyTorch classifier returning logits.
+    """
+
+    def __init__(self, model: Module) -> None:
+        super().__init__()
+        self.model = model
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        outputs = self.model(pixel_values=x)
+        return outputs.logits
 
 class ModelProvider:
 
     @staticmethod
-    def load(path: str | Path) -> Module:
-        model = AutoModelForImageClassification.from_pretrained(path)
+    def load(
+        model_id: str | Path,
+        *,
+        device: str | None = None,
+        dtype: torch.dtype | None = None,
+        trust_remote_code: bool = False,
+    ) -> tuple[Module, Any]:
 
-        #TODO
+        kwargs: dict[str, Any] = {
+            "trust_remote_code": trust_remote_code,
+        }
 
-        # checkpoint_path = Path(path).expanduser().resolve()
+        if dtype is not None:
+            kwargs["torch_dtype"] = dtype
 
-        # if not checkpoint_path.exists():
-        #     raise FileNotFoundError(
-        #         f"Model checkpoint not found: {checkpoint_path}"
-        #     )
+        processor = AutoImageProcessor.from_pretrained(
+            str(model_id),
+            trust_remote_code=trust_remote_code,
+        )
 
-        # checkpoint = torch.load(
-        #     checkpoint_path,
-        #     map_location="cpu",
-        # )
+        model = AutoModelForImageClassification.from_pretrained(
+            str(model_id),
+            **kwargs,
+        )
 
-        # model_checkpoint = validate_checkpoint(checkpoint)
+        if device is None:
+            device = (
+                "cuda"
+                if torch.cuda.is_available()
+                else "cpu"
+            )
 
-        # model = ModelRegistry.create(
-        #     model_checkpoint["architecture"],
-        #     model_checkpoint["num_classes"],
-        #     model_checkpoint["input_channels"],
-        # )
-
-        # model.load_state_dict(
-        #     model_checkpoint["state_dict"]
-        # )
-
+        model.to(device)
         model.eval()
 
-        return model
+        return (
+            HFImageClassifier(model),
+            processor,
+        )
