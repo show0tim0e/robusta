@@ -2,6 +2,7 @@ from pathlib import Path
 
 import torch
 from torch.nn import Module
+from transformers import AutoModelForImageClassification
 
 from vl_scanner.core.models.checkpoint import validate_checkpoint
 from vl_scanner.core.models.registry import ModelRegistry
@@ -11,29 +12,33 @@ class ModelProvider:
 
     @staticmethod
     def load(path: str | Path) -> Module:
-        checkpoint_path = Path(path).expanduser().resolve()
+        model = AutoModelForImageClassification.from_pretrained(path)
 
-        if not checkpoint_path.exists():
-            raise FileNotFoundError(
-                f"Model checkpoint not found: {checkpoint_path}"
-            )
+        #TODO
 
-        checkpoint = torch.load(
-            checkpoint_path,
-            map_location="cpu",
-        )
+        # checkpoint_path = Path(path).expanduser().resolve()
 
-        model_checkpoint = validate_checkpoint(checkpoint)
+        # if not checkpoint_path.exists():
+        #     raise FileNotFoundError(
+        #         f"Model checkpoint not found: {checkpoint_path}"
+        #     )
 
-        model = ModelRegistry.create(
-            model_checkpoint["architecture"],
-            model_checkpoint["num_classes"],
-            model_checkpoint["input_channels"],
-        )
+        # checkpoint = torch.load(
+        #     checkpoint_path,
+        #     map_location="cpu",
+        # )
 
-        model.load_state_dict(
-            model_checkpoint["state_dict"]
-        )
+        # model_checkpoint = validate_checkpoint(checkpoint)
+
+        # model = ModelRegistry.create(
+        #     model_checkpoint["architecture"],
+        #     model_checkpoint["num_classes"],
+        #     model_checkpoint["input_channels"],
+        # )
+
+        # model.load_state_dict(
+        #     model_checkpoint["state_dict"]
+        # )
 
         model.eval()
 
