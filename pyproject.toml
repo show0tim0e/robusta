@@ -12,6 +12,7 @@ dependencies = [
     "torchvision>=0.27.0",
     "transformers>=4.0.0",
     "datasets>=3.0.0",
+    "textual-dev>=1.8.0",
     "huggingface-hub>=0.34.0",
 ]
 
