@@ -16,7 +16,17 @@ class AttackParameter:
     optional: bool = False
 
 
+import inspect
+
+
 class Attack(ABC):
+    registry: dict[str, type["Attack"]] = {}
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        if not inspect.isabstract(cls):
+            cls.registry[cls.name()] = cls
+
     @staticmethod
     @abstractmethod
     def name() -> str:

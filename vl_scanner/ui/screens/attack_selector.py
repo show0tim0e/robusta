@@ -5,7 +5,7 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal, Vertical, VerticalScroll
 from textual.widgets import ContentSwitcher, Input, Label, SelectionList
 
-from vl_scanner.attacks import ATTACK_REGISTRY
+from vl_scanner.attacks import Attack
 
 from .base import BaseScreen
 
@@ -82,7 +82,7 @@ class AttackSelectorScreen(BaseScreen):
                 with ContentSwitcher(initial="list-view"):
                     # View 1: The Attack List
                     yield SelectionList(
-                        *[(attack.name(), attack) for attack in ATTACK_REGISTRY.values()],
+                        *[(attack.name(), attack) for attack in Attack.registry.values()],
                         id="list-view"
                     )
 
