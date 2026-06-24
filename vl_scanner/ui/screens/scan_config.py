@@ -2,10 +2,24 @@ from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.widgets import Input, TabbedContent, TabPane
 from vl_scanner.core.scanner import Scanner
+from vl_scanner.ui.widgets.attack_selector import AttackSelector
 from vl_scanner.ui.widgets.model_selector_tab import ModelSelector
 
 
 class ScanConfigScreen(Screen):
+    DEFAULT_CSS = """
+    ScanConfigScreen TabbedContent {
+        height: 100%;
+    }
+    ScanConfigScreen ContentSwitcher {
+        height: 1fr;
+    }
+    ScanConfigScreen TabPane {
+        height: 100%;
+        padding: 0;
+    }
+    """
+
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.scanner = Scanner()
@@ -15,7 +29,7 @@ class ScanConfigScreen(Screen):
             with TabPane("Model/Dataset", id="model_dataset_tab"):
                 yield ModelSelector()
             with TabPane("Attacks", id="attacks_tab"):
-                pass
+                yield AttackSelector()
             with TabPane("Parameters", id="parameters_tab"):
                 pass
 
