@@ -1,5 +1,17 @@
+from pathlib import Path
+
 from vl_scanner.attacks.fgsm import FGSM
 from vl_scanner.core.scanner import AttackConfig, Scanner, ScanResult
+
+
+def load_hf_token(path: str = ".venv.local") -> str:
+    for line in Path(path).read_text().splitlines():
+        line = line.strip()
+
+        if line.startswith("HF_TOKEN="):
+            return line.split("=", 1)[1].strip()
+
+    raise ValueError("HF_TOKEN not found in .venv.local")
 
 
 def process_scan_result(scan: ScanResult) -> None:
@@ -17,22 +29,27 @@ def process_scan_result(scan: ScanResult) -> None:
         print(f"Confidence:     {avg_conf:.4f}")
         print(f"Adv Confidence: {avg_adv_conf:.4f}")
 
+
 def test_mnist_scan():
     scanner = Scanner()
 
+    assert scanner.set_token(load_hf_token())
     assert scanner.set_model(model_id="fxmarty/resnet-tiny-mnist")
     assert scanner.set_dataset(dataset_id="ylecun/mnist", size=5000)
 
-    scanner.set_attacks([
-        AttackConfig(
-            attack=FGSM,
-            params={"epsilon": 0.1},
-        )
-    ])
+    scanner.set_attacks(
+        [
+            AttackConfig(
+                attack=FGSM,
+                params={"epsilon": 0.1},
+            )
+        ]
+    )
 
     scan_result = scanner.run()
 
     process_scan_result(scan_result)
+
 
 def test_cifar10_scan():
     scanner = Scanner()
@@ -40,16 +57,19 @@ def test_cifar10_scan():
     assert scanner.set_model(model_id="nateraw/vit-base-patch16-224-cifar10")
     assert scanner.set_dataset(dataset_id="uoft-cs/cifar10", size=200)
 
-    scanner.set_attacks([
-        AttackConfig(
-            attack=FGSM,
-            params={"epsilon": 0.03},
-        )
-    ])
-    
+    scanner.set_attacks(
+        [
+            AttackConfig(
+                attack=FGSM,
+                params={"epsilon": 0.03},
+            )
+        ]
+    )
+
     scan_result = scanner.run()
 
     process_scan_result(scan_result)
+
 
 def test_cifar100_scan():
     scanner = Scanner()
@@ -57,12 +77,14 @@ def test_cifar100_scan():
     assert scanner.set_model(model_id="Ahmed9275/Vit-Cifar100")
     assert scanner.set_dataset(dataset_id="uoft-cs/cifar100", size=200)
 
-    scanner.set_attacks([
-        AttackConfig(
-            attack=FGSM,
-            params={"epsilon": 0.03},
-        )
-    ])
+    scanner.set_attacks(
+        [
+            AttackConfig(
+                attack=FGSM,
+                params={"epsilon": 0.03},
+            )
+        ]
+    )
 
     scan_result = scanner.run()
 

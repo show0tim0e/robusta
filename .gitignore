@@ -232,3 +232,6 @@ examples/models/**/
 # prevent model weights
 *.pth
 *.pt
+
+# local tokens
+.venv.local

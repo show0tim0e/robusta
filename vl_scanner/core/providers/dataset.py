@@ -2,17 +2,9 @@ from datasets import ClassLabel, Dataset, Image, load_dataset
 
 
 class DatasetProvider:
-
     @staticmethod
-    def load(
-        dataset_id: str,
-        *,
-        split: str = "test"
-    ) -> Dataset:
-        return load_dataset(
-            dataset_id,
-            split=split
-        )
+    def load(dataset_id: str, *, split: str = "test") -> Dataset:
+        return load_dataset(dataset_id, split=split)
 
     @staticmethod
     def image_column(dataset: Dataset) -> str:
@@ -24,9 +16,7 @@ class DatasetProvider:
             if name in dataset.column_names:
                 return name
 
-        raise ValueError(
-            f"No image column found. Available: {dataset.column_names}"
-        )
+        raise ValueError(f"No image column found. Available: {dataset.column_names}")
 
     @staticmethod
     def label_column(dataset: Dataset) -> str:
@@ -38,18 +28,12 @@ class DatasetProvider:
             if name in dataset.column_names:
                 return name
 
-        raise ValueError(
-            f"No label column found. Available: {dataset.column_names}"
-        )
+        raise ValueError(f"No label column found. Available: {dataset.column_names}")
 
     @staticmethod
     def get_images(dataset: Dataset):
-        return dataset[
-            DatasetProvider.image_column(dataset)
-        ]
+        return dataset[DatasetProvider.image_column(dataset)]
 
     @staticmethod
     def get_labels(dataset: Dataset):
-        return dataset[
-            DatasetProvider.label_column(dataset)
-        ]
+        return dataset[DatasetProvider.label_column(dataset)]
