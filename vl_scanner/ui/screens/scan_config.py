@@ -6,6 +6,9 @@ from vl_scanner.ui.widgets.attack_selector import AttackSelector
 from vl_scanner.ui.widgets.model_selector_tab import ModelSelector
 
 
+from vl_scanner.ui.widgets.parameter_selector import ParameterSelector
+
+
 class ScanConfigScreen(Screen):
     DEFAULT_CSS = """
     ScanConfigScreen TabbedContent {
@@ -31,21 +34,29 @@ class ScanConfigScreen(Screen):
             with TabPane("Attacks", id="attacks_tab"):
                 yield AttackSelector()
             with TabPane("Parameters", id="parameters_tab"):
-                pass
+                yield ParameterSelector()
 
     def on_tabbed_content_tab_activated(self, event: TabbedContent.TabActivated) -> None:
         try:
             model_input = self.query_one("#model_id", Input)
             dataset_input = self.query_one("#dataset_id", Input)
+            
+            model_val = model_input.value.strip()
+            if model_val:
+                self.scanner.set_model(model_id=model_val)
+
+            dataset_val = dataset_input.value.strip()
+            if dataset_val:
+                self.scanner.set_dataset(dataset_id=dataset_val)
         except Exception:
-            return
+            pass
 
-        model_val = model_input.value.strip()
-        if model_val:
-            self.scanner.set_model(model_id=model_val)
+        if event.tabbed_content.active == "parameters_tab":
+            try:
+                param_selector = self.query_one(ParameterSelector)
+                param_selector.refresh_attacks()
+            except Exception:
+                pass
 
-        dataset_val = dataset_input.value.strip()
-        if dataset_val:
-            self.scanner.set_dataset(dataset_id=dataset_val)
 
 

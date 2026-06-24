@@ -45,7 +45,6 @@ class AttackSelector(Horizontal):
         self.query_one("#attack-description-container").border_title = "Description"
 
         list_widget = self.query_one("#attack-list-view", SelectionList)
-        list_widget.focus()
 
         # Set initial description for the first item
         if list_widget.option_count > 0:
