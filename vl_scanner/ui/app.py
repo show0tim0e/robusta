@@ -1,7 +1,7 @@
 from textual.app import App
 
 from vl_scanner.core import Scanner
-from vl_scanner.ui.screens import AttackProgressScreen, AttackSelectorScreen, DatasetSelectorScreen, EvaluationScreen, ModelSelectorScreen, ScanConfigScreen
+from vl_scanner.ui.screens import ScanConfigScreen
 
 
 class VLScannerApp(App):

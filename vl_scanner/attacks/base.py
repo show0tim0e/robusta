@@ -1,3 +1,4 @@
+import inspect
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any
@@ -14,9 +15,6 @@ class AttackParameter:
     type: type
     default: Any = None
     optional: bool = False
-
-
-import inspect
 
 
 class Attack(ABC):

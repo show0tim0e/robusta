@@ -1,8 +1,7 @@
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
-from textual.widgets import Input, Label, ListView, ListItem, TabbedContent
+from textual.widgets import Input, Label, ListItem, ListView, TabbedContent
 
-from vl_scanner.attacks import Attack
 from vl_scanner.core.scanner import AttackConfig
 
 
