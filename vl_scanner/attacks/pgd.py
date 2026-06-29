@@ -4,7 +4,7 @@ import numpy as np
 import torch
 from art.attacks.evasion import ProjectedGradientDescent
 from art.estimators.classification import PyTorchClassifier
-from torch import Tensor
+from torch import Tensor, nn
 from torch.nn import Module
 
 from .base import Attack, AttackParameter
@@ -24,7 +24,7 @@ class PGD(Attack):
         return [
             AttackParameter("epsilon", float, 0.03),
             AttackParameter("alpha", float, 0.01),
-            AttackParameter("num_iter", int, 40),
+            AttackParameter("num_iter", int, 40)
         ]
 
     @staticmethod
@@ -39,20 +39,20 @@ class PGD(Attack):
     ) -> Tensor:
         device = next(model.parameters()).device
 
-        x_np = x.detach().cpu().numpy()
-        y_np = y.detach().cpu().numpy()
-
         with torch.no_grad():
             n_classes = model(x[:1].to(device)).shape[-1]
 
         classifier = PyTorchClassifier(
             model=model,
-            loss=torch.nn.CrossEntropyLoss(),
-            input_shape=x_np.shape[1:],
+            loss=nn.CrossEntropyLoss(),
+            input_shape=x.shape[1:],
             nb_classes=n_classes,
             clip_values=(0.0, 1.0),
-            device_type="gpu" if device.type == "cuda" else "cpu",
+            device_type="gpu" if device.type == "cuda" else "cpu"
         )
+
+        x_np = x.detach().cpu().numpy()
+        y_np = y.detach().cpu().numpy()
 
         attack = ProjectedGradientDescent(
             estimator=classifier,
@@ -60,7 +60,7 @@ class PGD(Attack):
             eps_step=alpha,
             max_iter=num_iter,
             targeted=False,
-            norm="inf",
+            norm="inf"
         )
 
         if y_np.ndim == 1:
@@ -68,7 +68,10 @@ class PGD(Attack):
         else:
             y_onehot = y_np
 
-        x_adv_np = attack.generate(x=x_np, y=y_onehot)
+        x_adv_np = attack.generate(
+            x=x_np,
+            y=y_onehot
+        )
 
         return torch.from_numpy(x_adv_np).to(device=device, dtype=x.dtype)
 
