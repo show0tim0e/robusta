@@ -1,9 +1,33 @@
 from functools import partial
+import sys
 
 from textual.app import ComposeResult
 from textual.containers import Vertical
 from textual.screen import Screen
 from textual.widgets import Label, LoadingIndicator, ProgressBar
+
+
+# TODO: remove dev-mode sample result in the final version
+_DEV_SAMPLE_RESULT = {
+    "etsi_risk_level": "Critical",
+    "extent_of_damage": {
+        "composite_score": 3.85,
+        "metrics_detail": {
+            "inverted_accuracy": 0.95,
+            "inverted_macro_precision": 0.98,
+            "inverted_macro_recall": 0.93,
+            "inverted_macro_f1": 0.99,
+            "average_confidence_drop": 0.82,
+        },
+    },
+    "attackers_effort": {
+        "attack_steps": 4,
+        "attack_time_seconds": 12.5,
+        "computational_resources": {
+            "cpu_percent": 15.2,
+        },
+    },
+}
 
 
 class AttackProgressScreen(Screen):
@@ -73,3 +97,31 @@ class AttackProgressScreen(Screen):
     def _on_complete(self) -> None:
         self.query_one("#progress-label", Label).update("Scan complete!")
         self.notify("Scan complete.", severity="information")
+        eval_result = self._build_eval_result()
+        from vl_scanner.ui.screens.evaluation import EvaluationScreen
+        self.app.push_screen(EvaluationScreen(eval_result))
+
+    def _build_eval_result(self) -> dict:
+        if "--dev" in sys.argv:
+            return _DEV_SAMPLE_RESULT
+        scan_result = self._result
+        return {
+            "etsi_risk_level": "Unknown",
+            "extent_of_damage": {
+                "composite_score": 0.0,
+                "metrics_detail": {
+                    "inverted_accuracy": 0.0,
+                    "inverted_macro_precision": 0.0,
+                    "inverted_macro_recall": 0.0,
+                    "inverted_macro_f1": 0.0,
+                    "average_confidence_drop": 0.0,
+                },
+            },
+            "attackers_effort": {
+                "attack_steps": len(scan_result.results) if scan_result is not None else 0,
+                "attack_time_seconds": 0.0,
+                "computational_resources": {
+                    "cpu_percent": 0.0,
+                },
+            },
+        }
