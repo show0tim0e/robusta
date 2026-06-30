@@ -7,11 +7,7 @@ from vl_scanner.ui.screens import AttackProgressScreen, ScanConfigScreen
 
 class VLScannerApp(App):
     SCREENS = {
-        #"ModelSelectorScreen": ModelSelectorScreen,
-        #"DatasetSelectorScreen": DatasetSelectorScreen,
-        #"AttackSelectorScreen": AttackSelectorScreen,
         "AttackProgressScreen": AttackProgressScreen,
-        #"EvaluationScreen": EvaluationScreen,
         "ScanConfigScreen": ScanConfigScreen
     }
 

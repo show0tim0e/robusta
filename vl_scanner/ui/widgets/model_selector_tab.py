@@ -230,7 +230,7 @@ class ModelSelector(Vertical):
 
         self.notify(f"Loading dataset '{dataset_val}'...", severity="information")
         worker = self.run_worker(
-            lambda: scanner.set_dataset(dataset_id=dataset_val, size=_DEV_DATASET_SIZE),  # TODO: remove hardcoded size in final version
+            lambda: scanner.set_dataset(dataset_id=dataset_val, size=(_DEV_DATASET_SIZE if _is_dev_mode() else None)),  # TODO: remove hardcoded size in final version
             thread=True,
             name="load_dataset",
             exclusive=True,
