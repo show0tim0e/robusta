@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from vl_scanner.attacks.fgsm import FGSM
+from vl_scanner.attacks.tuap import TUAP
 from vl_scanner.core.scanner import AttackConfig, Scanner, ScanResult
 
 
@@ -40,8 +41,8 @@ def test_mnist_scan():
     scanner.set_attacks(
         [
             AttackConfig(
-                attack=FGSM,
-                params={"epsilon": 0.1},
+                attack=TUAP,
+                params={"targeted_class": 0, "eps": 0.1, "norm": "inf", "delta": 0.2, "max_iter": 20, "attacker": "fgsm", "attacker_eps": 0.03},
             )
         ]
     )
