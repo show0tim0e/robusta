@@ -1,11 +1,10 @@
-from functools import partial
 import sys
+from functools import partial
 
 from textual.app import ComposeResult
 from textual.containers import Vertical
 from textual.screen import Screen
-from textual.widgets import Label, LoadingIndicator, ProgressBar
-
+from textual.widgets import Footer, Header, Label, LoadingIndicator, ProgressBar
 
 # TODO: remove dev-mode sample result in the final version
 _DEV_SAMPLE_RESULT = {
@@ -54,6 +53,7 @@ class AttackProgressScreen(Screen):
 
     #progress-bar {
         width: 100%;
+        align-horizontal: center;
     }
 
     #loading-indicator {
@@ -64,16 +64,24 @@ class AttackProgressScreen(Screen):
     }
     """
 
+    BINDINGS = [
+        ("q", "quit_app", "Quit"),
+        ("r", "restart", "Restart"),
+    ]
+
     def __init__(self, scanner) -> None:
         super().__init__()
         self.scanner = scanner
         self._result = None
+        self._worker = None
 
     def compose(self) -> ComposeResult:
+        yield Header()
         with Vertical(id="progress-container"):
             yield Label("Starting scan...", id="progress-label")
             yield ProgressBar(total=100, show_eta=False, id="progress-bar")
             yield LoadingIndicator(id="loading-indicator")
+        yield Footer()
 
     def on_mount(self) -> None:
         total = len(self.scanner.attacks)
@@ -81,15 +89,27 @@ class AttackProgressScreen(Screen):
             self.query_one("#progress-label", Label).update("No attacks selected.")
             return
         self.query_one("#progress-bar", ProgressBar).update(total=total)
-        self.run_worker(self._run_scan, thread=True, exclusive=True)
+        self._worker = self.run_worker(self._run_scan, thread=True, exclusive=True)
 
     def _run_scan(self) -> None:
         callback = partial(self.app.call_from_thread, self._on_progress)
         self._result = self.scanner.run(progress_callback=callback)
         self.app.call_from_thread(self._on_complete)
 
+    def _stop_worker(self) -> None:
+        if self._worker is not None and not self._worker.is_finished:
+            self._worker.cancel()
+
+    def action_quit_app(self) -> None:
+        self._stop_worker()
+        self.app.exit()
+
+    def action_restart(self) -> None:
+        self._stop_worker()
+        self.app.switch_screen("ScanConfigScreen")
+
     def _on_progress(self, current: int, total: int, attack_name: str) -> None:
-        self.query_one("#progress-bar", ProgressBar).update(progress=current)
+        self.query_one("#progress-bar", ProgressBar).update(progress=(current - 1))
         self.query_one("#progress-label", Label).update(
             f"Running attack {current}/{total}: {attack_name}"
         )

@@ -146,6 +146,10 @@ class Scanner:
 
         # run attacks
         for i, attack_config in enumerate(self.attacks):
+            # Update ProgressBar
+            if progress_callback is not None:
+                progress_callback(i + 1, total, attack_config.attack.name())
+
             x_adv = attack_config.attack.generate(self.model, x, y, **attack_config.params)
 
             with torch.no_grad():
@@ -155,8 +159,5 @@ class Scanner:
                 adv_confidence, adv_pred = adv_probs.max(dim=1)
 
             results.append(AttackResult(attack_name=attack_config.attack.name(), attack_params=dict(attack_config.params), x_adv=x_adv.detach().cpu(), adv_pred=adv_pred.detach().cpu(), adv_confidence=adv_confidence.detach().cpu()))
-
-            if progress_callback is not None:
-                progress_callback(i + 1, total, attack_config.attack.name())
 
         return ScanResult(x=x.detach().cpu(), y=y.detach().cpu(), pred=pred.detach().cpu(), confidence=confidence.detach().cpu(), results=results)

@@ -3,7 +3,7 @@ from typing import Any
 from textual.app import ComposeResult
 from textual.containers import Container
 from textual.screen import Screen
-from textual.widgets import DataTable, Label
+from textual.widgets import DataTable, Footer, Header, Label
 
 
 class EvaluationScreen(Screen):
@@ -35,14 +35,27 @@ class EvaluationScreen(Screen):
     }
     """
 
+    BINDINGS = [
+        ("q", "quit_app", "Quit"),
+        ("r", "restart", "Restart"),
+    ]
+
     def __init__(self, result: dict[str, Any]) -> None:
         super().__init__()
         self.result = result
 
     def compose(self) -> ComposeResult:
+        yield Header()
         with Container(id="eval-container"):
             yield Label("Evaluation Results", id="eval-title")
             yield DataTable(id="eval-table")
+        yield Footer()
+
+    def action_quit_app(self) -> None:
+        self.app.exit()
+
+    def action_restart(self) -> None:
+        self.app.switch_screen("ScanConfigScreen")
 
     def on_mount(self) -> None:
         table = self.query_one("#eval-table", DataTable)
