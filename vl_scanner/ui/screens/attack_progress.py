@@ -3,7 +3,7 @@ from functools import partial
 from textual.app import ComposeResult
 from textual.containers import Vertical
 from textual.screen import Screen
-from textual.widgets import Label, ProgressBar
+from textual.widgets import Label, LoadingIndicator, ProgressBar
 
 
 class AttackProgressScreen(Screen):
@@ -31,6 +31,13 @@ class AttackProgressScreen(Screen):
     #progress-bar {
         width: 100%;
     }
+
+    #loading-indicator {
+        margin-top: 1;
+        height: 3;
+        width: 100%;
+        content-align: center middle;
+    }
     """
 
     def __init__(self, scanner) -> None:
@@ -41,7 +48,8 @@ class AttackProgressScreen(Screen):
     def compose(self) -> ComposeResult:
         with Vertical(id="progress-container"):
             yield Label("Starting scan...", id="progress-label")
-            yield ProgressBar(total=100, show_eta=True, id="progress-bar")
+            yield ProgressBar(total=100, show_eta=False, id="progress-bar")
+            yield LoadingIndicator(id="loading-indicator")
 
     def on_mount(self) -> None:
         total = len(self.scanner.attacks)
