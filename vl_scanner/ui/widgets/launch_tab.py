@@ -76,23 +76,5 @@ class LaunchTab(Vertical):
             await self._launch()
 
     async def _launch(self) -> None:
-        launch_btn = self.query_one("#launch-btn", Button)
-        launch_btn.disabled = True
-        launch_btn.label = "Launching..."
-        self.notify("Launching scanner...", severity="information")
-
-        scanner = self.app.scanner
-        try:
-            await self.run_worker(
-                lambda: scanner.run(),
-                thread=True,
-                name="launch_scanner",
-                exclusive=True,
-            ).wait()
-            self.notify("Scan complete.", severity="information")
-        except Exception as e:
-            self.notify(f"Scan failed: {type(e).__name__}: {e}", severity="error")
-        finally:
-            launch_btn.label = "Launch Scanner"
-            launch_btn.disabled = False
-            self.refresh_status()
+        from vl_scanner.ui.screens.attack_progress import AttackProgressScreen
+        self.app.push_screen(AttackProgressScreen(self.app.scanner))

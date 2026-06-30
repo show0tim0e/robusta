@@ -1,6 +1,6 @@
 from textual.app import ComposeResult
 from textual.screen import Screen
-from textual.widgets import Input, TabbedContent, TabPane
+from textual.widgets import TabbedContent, TabPane
 
 from vl_scanner.core.scanner import Scanner
 from vl_scanner.ui.widgets.attack_selector import AttackSelector

@@ -1,6 +1,17 @@
+import sys
+
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Button, Input, Label
+
+# TODO: remove dev-mode defaults in the final version
+_DEV_MODEL_ID = "nateraw/vit-base-patch16-224-cifar10"
+_DEV_DATASET_ID = "uoft-cs/cifar10"
+_DEV_DATASET_SIZE = 50
+
+
+def _is_dev_mode() -> bool:
+    return "--dev" in sys.argv
 
 
 class ModelSelector(Vertical):
@@ -70,6 +81,7 @@ class ModelSelector(Vertical):
         return "Save Token"
 
     def compose(self) -> ComposeResult:
+        dev = _is_dev_mode()
         yield Label("HuggingFace Token:")
         with Horizontal(id="token-container"):
             yield Input(
@@ -84,6 +96,7 @@ class ModelSelector(Vertical):
             with Horizontal(classes="input-row"):
                 yield Input(
                     placeholder="e.g., meta-llama/Llama-3-8B-Instruct",
+                    value=_DEV_MODEL_ID if dev else "",
                     id="model_id",
                 )
                 yield Button("Load", id="model_load_btn", variant="primary")
@@ -93,6 +106,7 @@ class ModelSelector(Vertical):
             with Horizontal(classes="input-row"):
                 yield Input(
                     placeholder="e.g., imdb",
+                    value=_DEV_DATASET_ID if dev else "",
                     id="dataset_id",
                 )
                 yield Button("Load", id="dataset_load_btn", variant="primary")
@@ -216,7 +230,7 @@ class ModelSelector(Vertical):
 
         self.notify(f"Loading dataset '{dataset_val}'...", severity="information")
         worker = self.run_worker(
-            lambda: scanner.set_dataset(dataset_id=dataset_val),
+            lambda: scanner.set_dataset(dataset_id=dataset_val, size=_DEV_DATASET_SIZE),  # TODO: remove hardcoded size in final version
             thread=True,
             name="load_dataset",
             exclusive=True,

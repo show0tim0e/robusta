@@ -2,7 +2,7 @@ import huggingface_hub
 from textual.app import App
 
 from vl_scanner.core import Scanner
-from vl_scanner.ui.screens import ScanConfigScreen
+from vl_scanner.ui.screens import AttackProgressScreen, ScanConfigScreen
 
 
 class VLScannerApp(App):
@@ -10,7 +10,7 @@ class VLScannerApp(App):
         #"ModelSelectorScreen": ModelSelectorScreen,
         #"DatasetSelectorScreen": DatasetSelectorScreen,
         #"AttackSelectorScreen": AttackSelectorScreen,
-        #"AttackProgressScreen": AttackProgressScreen,
+        "AttackProgressScreen": AttackProgressScreen,
         #"EvaluationScreen": EvaluationScreen,
         "ScanConfigScreen": ScanConfigScreen
     }
