@@ -189,6 +189,7 @@ class ModelSelector(Vertical):
             load_btn.disabled = False
             self.notify(f"Model '{model_val}' loaded.", severity="information")
             self._update_section_states()
+            self._refresh_launch_tab()
         else:
             load_btn.label = "Load"
             load_btn.disabled = False
@@ -233,7 +234,15 @@ class ModelSelector(Vertical):
             load_btn.label = "Change Dataset"
             load_btn.disabled = False
             self.notify(f"Dataset '{dataset_val}' loaded.", severity="information")
+            self._refresh_launch_tab()
         else:
             load_btn.label = "Load"
             load_btn.disabled = False
             self.notify(f"Failed to load dataset '{dataset_val}'.", severity="error")
+
+    def _refresh_launch_tab(self) -> None:
+        from vl_scanner.ui.widgets.launch_tab import LaunchTab
+        try:
+            self.screen.query_one(LaunchTab).refresh_status()
+        except Exception:
+            pass

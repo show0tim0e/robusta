@@ -82,5 +82,10 @@ class AttackSelector(Horizontal):
             params = {p.name: p.default for p in attack_class.attack_parameters()}
             configs.append(AttackConfig(attack=attack_class, params=params))
 
-        if hasattr(self.screen, "scanner"):
-            self.screen.scanner.set_attacks(configs)
+        self.app.scanner.set_attacks(configs)
+
+        from vl_scanner.ui.widgets.launch_tab import LaunchTab
+        try:
+            self.screen.query_one(LaunchTab).refresh_status()
+        except Exception:
+            pass
