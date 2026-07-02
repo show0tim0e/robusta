@@ -6,8 +6,31 @@ from textual.screen import Screen
 from textual.widgets import DataTable, Footer, Header, Label
 
 
+def _format(value: float | int | None, fmt: str = ".2f") -> str:
+    return "N/A" if value is None else format(float(value), fmt)
+
+
+def _etsi_risk_level(composite_score: float | None) -> str:
+    if composite_score is None:
+        return "N/A"
+    if composite_score >= 3.0:
+        return "Critical"
+    if composite_score >= 2.0:
+        return "Major"
+    if composite_score >= 1.0:
+        return "Moderate"
+    return "Minor"
+
+
 class EvaluationScreen(Screen):
-    """Screen that displays the evaluation results in a table."""
+    """Screen that displays the evaluation results in a table.
+
+    Expects the dict returned by :class:`vl_scanner.assessment.evaluator.Evaluator`:
+    a mapping of ``attack_name`` -> per-attack result containing
+    ``extent_of_damage`` (with ``composite_score`` and ``metrics_detail``) and
+    ``attackers_effort`` (with ``attack_steps``, ``attack_time_seconds`` and
+    ``cpu_usage_percent``).
+    """
 
     DEFAULT_CSS = """
     EvaluationScreen {
@@ -40,7 +63,7 @@ class EvaluationScreen(Screen):
         ("r", "restart", "Restart"),
     ]
 
-    def __init__(self, result: dict[str, Any]) -> None:
+    def __init__(self, result: dict[str, dict[str, Any]]) -> None:
         super().__init__()
         self.result = result
 
@@ -59,9 +82,8 @@ class EvaluationScreen(Screen):
 
     def on_mount(self) -> None:
         table = self.query_one("#eval-table", DataTable)
-        metrics = self.result["extent_of_damage"]["metrics_detail"]
-        effort = self.result["attackers_effort"]
-        num_attacks = effort.get("attack_steps", 1) or 1
+        table.cursor_type = "row"
+        table.zebra_stripes = True
 
         columns: list[tuple[str, int]] = [
             ("Attack", 12),
@@ -79,18 +101,24 @@ class EvaluationScreen(Screen):
         for name, width in columns:
             table.add_column(name, width=width)
 
-        for i in range(num_attacks):
-            row = [
-                f"Attack {i + 1}",
-                self.result["etsi_risk_level"],
-                f"{self.result['extent_of_damage']['composite_score']:.2f}",
-                f"{metrics['inverted_accuracy']:.2f}",
-                f"{metrics['inverted_macro_precision']:.2f}",
-                f"{metrics['inverted_macro_recall']:.2f}",
-                f"{metrics['inverted_macro_f1']:.2f}",
-                f"{metrics['average_confidence_drop']:.2f}",
-                str(effort["attack_steps"]),
-                f"{effort['attack_time_seconds']:.2f}",
-                f"{effort['computational_resources']['cpu_percent']:.2f}",
-            ]
-            table.add_row(*row)
+        for attack_name, attack_result in self.result.items():
+            damage = attack_result.get("extent_of_damage", {}) or {}
+            metrics = damage.get("metrics_detail", {}) or {}
+            effort = attack_result.get("attackers_effort", {}) or {}
+            composite = damage.get("composite_score")
+
+            display_name = (attack_result.get("attack_art") or attack_name).upper()
+
+            table.add_row(
+                display_name,
+                _etsi_risk_level(composite),
+                _format(composite),
+                _format(metrics.get("inverted_accuracy")),
+                _format(metrics.get("inverted_macro_precision")),
+                _format(metrics.get("inverted_macro_recall")),
+                _format(metrics.get("inverted_macro_f1")),
+                _format(metrics.get("average_confidence_drop")),
+                str(effort.get("attack_steps", "N/A")),
+                _format(effort.get("attack_time_seconds")),
+                _format(effort.get("cpu_usage_percent")),
+            )
