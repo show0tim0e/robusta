@@ -1,14 +1,15 @@
-import sys
 import os
+import sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import json
 from pathlib import Path
 
-# Wir importieren die Klassen aus Ihrem Projekt
+from vl_scanner.assessment.evaluator import Evaluator
 from vl_scanner.attacks.fgsm import FGSM
 from vl_scanner.core.scanner import AttackConfig, Scanner
-from vl_scanner.assessment.evaluator import Evaluator
+
 
 def load_hf_token(path: str = ".venv.local") -> str:
     """Lädt das Hugging Face Token aus der versteckten lokalen Datei."""
