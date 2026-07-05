@@ -1,6 +1,7 @@
 import random
 from collections.abc import Sequence
 from dataclasses import dataclass, field
+from datetime import datetime
 from typing import Any
 
 import huggingface_hub
@@ -23,6 +24,7 @@ class AttackConfig:
 class AttackResult:
     attack_name: str
     attack_params: dict[str, Any]
+    attack_time_seconds: float
 
     x_adv: Tensor
     adv_pred: Tensor
@@ -150,6 +152,8 @@ class Scanner:
             if progress_callback is not None:
                 progress_callback(i + 1, total, attack_config.attack.name())
 
+            time = datetime.now()
+
             x_adv = attack_config.attack.generate(self.model, x, y, **attack_config.params)
 
             with torch.no_grad():
@@ -158,6 +162,8 @@ class Scanner:
                 adv_probs = torch.softmax(adv_logits, dim=1)
                 adv_confidence, adv_pred = adv_probs.max(dim=1)
 
-            results.append(AttackResult(attack_name=attack_config.attack.name(), attack_params=dict(attack_config.params), x_adv=x_adv.detach().cpu(), adv_pred=adv_pred.detach().cpu(), adv_confidence=adv_confidence.detach().cpu()))
+            attack_time_seconds = (datetime.now() - time).total_seconds()
+
+            results.append(AttackResult(attack_name=attack_config.attack.name(), attack_params=dict(attack_config.params), attack_time_seconds=attack_time_seconds, x_adv=x_adv.detach().cpu(), adv_pred=adv_pred.detach().cpu(), adv_confidence=adv_confidence.detach().cpu()))
 
         return ScanResult(x=x.detach().cpu(), y=y.detach().cpu(), pred=pred.detach().cpu(), confidence=confidence.detach().cpu(), results=results)

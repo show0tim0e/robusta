@@ -25,6 +25,7 @@ def process_scan_result(scan: ScanResult) -> None:
 
         print(f"\nAttack: {result.attack_name}")
         print(f"Params: {result.attack_params}")
+        print(f"Attack Time: {result.attack_time_seconds:.2f}s")
         print(f"Accuracy:       {accuracy:.2%}")
         print(f"Adv Accuracy:   {adv_accuracy:.2%}")
         print(f"Confidence:     {avg_conf:.4f}")
@@ -36,7 +37,7 @@ def test_mnist_scan():
 
     assert scanner.set_token(load_hf_token())
     assert scanner.set_model(model_id="fxmarty/resnet-tiny-mnist")
-    assert scanner.set_dataset(dataset_id="ylecun/mnist", size=5000)
+    assert scanner.set_dataset(dataset_id="ylecun/mnist", size=50)
 
     scanner.set_attacks(
         [

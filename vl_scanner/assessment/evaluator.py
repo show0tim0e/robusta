@@ -28,6 +28,7 @@ class Evaluator:
         total = len(scan_result.results)
         for i, attack_res in enumerate(scan_result.results): #falls man mehrere angriffe bewertet, dann mit for schleife alle durch
             attack_name = attack_res.attack_name
+            attack_time_seconds = attack_res.attack_time_seconds
             #wir holen labelung und Konfidenz NACH Angriff
             y_pred_adv = attack_res.adv_pred.numpy() #Labelung
             probs_adv = attack_res.adv_confidence.numpy() # Konfidenz
@@ -67,7 +68,7 @@ class Evaluator:
                 },
                 "attackers_effort": {
                     "attack_steps": attack_steps,
-                    "attack_time_seconds": None,
+                    "attack_time_seconds": attack_time_seconds,
                     "cpu_usage_percent": None
                 }
             }
