@@ -32,10 +32,15 @@ def process_scan_result(scan: ScanResult) -> None:
         print(f"Adv Confidence: {avg_adv_conf:.4f}")
 
 
-def test_mnist_scan():
+def test_set_token():
     scanner = Scanner()
 
     assert scanner.set_token(load_hf_token())
+
+
+def test_mnist_scan():
+    scanner = Scanner()
+
     assert scanner.set_model(model_id="fxmarty/resnet-tiny-mnist")
     assert scanner.set_dataset(dataset_id="ylecun/mnist", size=50)
 
