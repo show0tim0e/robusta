@@ -16,7 +16,7 @@ class TUAP(Attack):
 
     @staticmethod
     def description() -> str:
-        return "Targeted Universal Adversarial Perturbation (TUAP) berechnet eine einzige, eingabe-unabhängige Perturbation, die, addiert auf (fast) beliebige Eingaben, das Modell dazu bringt, eine bestimmte Zielklasse vorherzusagen. Die Perturbation wird iterativ aus einem Batch repräsentativer Eingaben gelernt: für jedes noch nicht erfolgreich umgelenkte Sample wird ein innerer, gezielter Angriff (Standard: FGSM) genutzt, um die gemeinsame Perturbation in Richtung der Zielklasse zu verschieben. Anschließend wird sie auf eine Lp-Kugel mit Radius 'eps' projiziert. Im Gegensatz zu PGD ist das Ergebnis 'universal': dieselbe Perturbation funktioniert über viele verschiedene Eingaben hinweg und kann auch auf neue, ungesehene Samples übertragen werden. Unterstützte innere Angriffe sind 'fgsm' und 'simba'."
+        return "Targeted Universal Adversarial Perturbation (TUAP) computes a single, input-independent perturbation that, when added to (almost) any input, causes the model to predict a specific target class. The perturbation is learned iteratively from a batch of representative inputs: for each sample that has not yet been successfully redirected, an internal, targeted attack (FGSM) is used to shift the joint perturbation toward the target class. It is then projected onto an Lp sphere with radius ‘eps’. Unlike PGD, the result is ‘universal’: the same perturbation works across many different inputs and can also be transferred to new, unseen samples."
 
     @staticmethod
     def attack_parameters() -> list[AttackParameter]:
