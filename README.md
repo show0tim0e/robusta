@@ -25,8 +25,15 @@ git switch dev
 
 [uv](https://docs.astral.sh/uv/) is an extremely fast Python package manager. When using uv run, the environment is synchronized automatically.
 
-**Run the project:**
+**Run the project (CPU):**
 ```bash
+uv sync
+uv run main.py
+```
+
+**Run the project (CUDA 12.6, for GPU acceleration):**
+```bash
+uv sync --extra cu126
 uv run main.py
 ```
 
