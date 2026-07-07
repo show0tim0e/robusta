@@ -23,10 +23,8 @@ class TUAP(Attack):
         return [
             AttackParameter("target_class", int, 0),
             AttackParameter("eps", float, 0.1),
-            AttackParameter("norm", str, "inf"),
             AttackParameter("delta", float, 0.2),
             AttackParameter("max_iter", int, 20),
-            AttackParameter("attacker", str, "fgsm"),
             AttackParameter("attacker_eps", float, 0.03)
         ]
 
@@ -37,10 +35,8 @@ class TUAP(Attack):
         y: Tensor,
         target_class: int = 0,
         eps: float = 0.1,
-        norm: str = "inf",
         delta: float = 0.2,
         max_iter: int = 20,
-        attacker: str = "fgsm",
         attacker_eps: float = 0.03,
         **kwargs: Any,
     ) -> Tensor:
@@ -64,12 +60,12 @@ class TUAP(Attack):
 
         attack = TargetedUniversalPerturbation(
             classifier=classifier,
-            attacker=attacker,
+            attacker="fgsm",
             attacker_params={"eps": attacker_eps, "targeted": True},
             delta=delta,
             max_iter=max_iter,
             eps=eps,
-            norm=norm
+            norm="inf"
         )
 
         x_adv = attack.generate(x=x_np, y=y_target)
