@@ -2,7 +2,7 @@ import sys
 
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
-from textual.widgets import Button, Input, Label
+from textual.widgets import Button, Input
 
 # TODO: remove dev-mode defaults in the final version
 _DEV_MODEL_ID = "nateraw/vit-base-patch16-224-cifar10"
@@ -17,18 +17,13 @@ def _is_dev_mode() -> bool:
 class ModelSelector(Vertical):
     DEFAULT_CSS = """
     ModelSelector {
-        border: round $accent;
-        padding: 1 2;
-        margin: 1 2;
+        height: 1fr;
+        align: center middle;
+    }
+
+    #boxes-wrapper {
+        width: 100;
         height: auto;
-    }
-
-    ModelSelector Label {
-        margin-top: 1;
-    }
-
-    ModelSelector Input {
-        margin-bottom: 1;
     }
 
     .input-row {
@@ -46,11 +41,15 @@ class ModelSelector(Vertical):
     }
 
     .section {
-        height: auto;
+        border: round $warning;
+        height: 5;
+        padding: 0 1;
+        margin-bottom: 1;
+        align: center middle;
     }
 
-    .section.disabled {
-        opacity: 40%;
+    .section.ready {
+        border: round $success;
     }
 
     #token-container {
@@ -70,7 +69,6 @@ class ModelSelector(Vertical):
 
     def __init__(self) -> None:
         super().__init__()
-        self.border_title = "Model & Dataset"
         self._loaded_model_id = ""
         self._loaded_dataset_id = ""
 
@@ -82,48 +80,54 @@ class ModelSelector(Vertical):
 
     def compose(self) -> ComposeResult:
         dev = _is_dev_mode()
-        yield Label("HuggingFace Token:")
-        with Horizontal(id="token-container"):
-            yield Input(
-                placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-                id="token-input",
-                password=True,
-            )
-            yield Button(self._token_button_label(), id="token-btn", variant="primary")
 
-        with Vertical(id="model-section", classes="section"):
-            yield Label("HuggingFace Model:")
-            with Horizontal(classes="input-row"):
-                yield Input(
-                    placeholder="nateraw/vit-base-patch16-224-cifar10",
-                    value=_DEV_MODEL_ID if dev else "",
-                    id="model_id",
-                )
-                yield Button("Load", id="model_load_btn", variant="primary")
+        with Vertical(id="boxes-wrapper"):
+            with Vertical(id="token-section", classes="section"):
+                with Horizontal(id="token-container"):
+                    yield Input(
+                        placeholder="hf_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+                        id="token-input",
+                        password=True,
+                    )
+                    yield Button(self._token_button_label(), id="token-btn", variant="primary")
 
-        with Vertical(id="dataset-section", classes="section"):
-            yield Label("HuggingFace Dataset:")
-            with Horizontal(classes="input-row"):
-                yield Input(
-                    placeholder="uoft-cs/cifar10",
-                    value=_DEV_DATASET_ID if dev else "",
-                    id="dataset_id",
-                )
-                yield Button("Load", id="dataset_load_btn", variant="primary")
+            with Vertical(id="model-section", classes="section"):
+                with Horizontal(classes="input-row"):
+                    yield Input(
+                        placeholder="nateraw/vit-base-patch16-224-cifar10",
+                        value=_DEV_MODEL_ID if dev else "",
+                        id="model_id",
+                    )
+                    yield Button("Load", id="model_load_btn", variant="primary")
+
+            with Vertical(id="dataset-section", classes="section"):
+                with Horizontal(classes="input-row"):
+                    yield Input(
+                        placeholder="uoft-cs/cifar10",
+                        value=_DEV_DATASET_ID if dev else "",
+                        id="dataset_id",
+                    )
+                    yield Button("Load", id="dataset_load_btn", variant="primary")
 
     def on_mount(self) -> None:
+        self.query_one("#token-section", Vertical).border_title = "HuggingFace Token"
+        self.query_one("#model-section", Vertical).border_title = "HuggingFace Model"
+        self.query_one("#dataset-section", Vertical).border_title = "HuggingFace Dataset"
         self._update_section_states()
 
     def _update_section_states(self) -> None:
         scanner = getattr(self.app, "scanner", None)
         has_token = scanner is not None and bool(getattr(scanner, "token", None))
         has_model = scanner is not None and scanner.model is not None
+        has_dataset = scanner is not None and scanner.dataset is not None
 
-        model_section = self.query_one("#model-section")
-        dataset_section = self.query_one("#dataset-section")
+        token_section = self.query_one("#token-section", Vertical)
+        model_section = self.query_one("#model-section", Vertical)
+        dataset_section = self.query_one("#dataset-section", Vertical)
 
-        model_section.set_class(not has_token, "disabled")
-        dataset_section.set_class(not has_model, "disabled")
+        token_section.set_class(has_token, "ready")
+        model_section.set_class(has_model, "ready")
+        dataset_section.set_class(has_dataset, "ready")
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "token-btn":
@@ -248,6 +252,7 @@ class ModelSelector(Vertical):
             load_btn.label = "Change Dataset"
             load_btn.disabled = False
             self.notify(f"Dataset '{dataset_val}' loaded.", severity="information")
+            self._update_section_states()
             self._refresh_launch_tab()
         else:
             load_btn.label = "Load"
