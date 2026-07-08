@@ -95,7 +95,7 @@ class ModelSelector(Vertical):
             yield Label("HuggingFace Model:")
             with Horizontal(classes="input-row"):
                 yield Input(
-                    placeholder="e.g., meta-llama/Llama-3-8B-Instruct",
+                    placeholder="nateraw/vit-base-patch16-224-cifar10",
                     value=_DEV_MODEL_ID if dev else "",
                     id="model_id",
                 )
@@ -105,7 +105,7 @@ class ModelSelector(Vertical):
             yield Label("HuggingFace Dataset:")
             with Horizontal(classes="input-row"):
                 yield Input(
-                    placeholder="e.g., imdb",
+                    placeholder="uoft-cs/cifar10",
                     value=_DEV_DATASET_ID if dev else "",
                     id="dataset_id",
                 )
