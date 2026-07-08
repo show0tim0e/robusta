@@ -52,8 +52,8 @@ class ParameterSelector(Horizontal):
         with Vertical(id="param-sidebar"):
             yield ListView(id="selected-attacks-list")
 
-        with VerticalScroll(id="param-form-container"):
-            yield Vertical(id="param-fields")
+        with Vertical(id="param-form-container"):
+            yield VerticalScroll(id="param-fields")
 
     def on_tabbed_content_tab_activated(self, event: TabbedContent.TabActivated) -> None:
         """Automatically refresh selected attacks list when the Parameters tab is viewed."""
@@ -96,7 +96,7 @@ class ParameterSelector(Horizontal):
         attack_class = attack_config.attack
         params = attack_class.attack_parameters()
 
-        container = self.query_one("#param-fields", Vertical)
+        container = self.query_one("#param-fields", VerticalScroll)
         container.query("*").remove()
 
         self.query_one("#param-form-container").border_title = f"Parameters: {attack_class.name()}"
