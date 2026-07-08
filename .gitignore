@@ -235,3 +235,6 @@ examples/models/**/
 
 # local tokens
 .venv.local
+
+# generated test artifacts
+artifacts/
