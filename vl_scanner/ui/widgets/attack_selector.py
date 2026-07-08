@@ -52,6 +52,9 @@ class AttackSelector(Horizontal):
             self.query_one("#attack-description", Label).update(first_attack.description())
 
     def compose(self) -> ComposeResult:
+        from vl_scanner.attacks import ensure_loaded
+        ensure_loaded()
+
         # View 1: The Attack List
         with Container(id="attack-list-container"):
             yield SelectionList(

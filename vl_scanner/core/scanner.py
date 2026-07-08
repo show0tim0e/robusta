@@ -1,17 +1,19 @@
+from __future__ import annotations
+
 import random
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-import huggingface_hub
-import torch
-from torch import Tensor
-from torch.nn import Module
+if TYPE_CHECKING:
+    import torch
+    from torch import Tensor
+    from torch.nn import Module
 
-from vl_scanner.attacks.base import Attack
-from vl_scanner.core.providers.dataset import DatasetProvider
-from vl_scanner.core.providers.model import ModelProvider
+    from vl_scanner.attacks.base import Attack
+    from vl_scanner.core.providers.dataset import DatasetProvider
+    from vl_scanner.core.providers.model import ModelProvider
 
 
 @dataclass(slots=True, frozen=True)
@@ -49,6 +51,7 @@ class Scanner:
     attacks: Sequence[AttackConfig] = field(default_factory=tuple)
 
     def set_token(self, token: str) -> bool:
+        import huggingface_hub
         try:
             huggingface_hub.login(
                 token=token,
@@ -64,6 +67,8 @@ class Scanner:
         if not self.logged_in():
             return False
 
+        from vl_scanner.core.providers.model import ModelProvider
+
         try:
             model, processor = ModelProvider.load(model_id=model_id, device=device, dtype=dtype, trust_remote_code=trust_remote_code)
 
@@ -78,6 +83,9 @@ class Scanner:
     def set_dataset(self, dataset_id: str, *, split: str = "test", size: int | None = None) -> bool:
         if not self.logged_in():
             return False
+
+        from vl_scanner.core.providers.dataset import DatasetProvider
+        import torch
 
         try:
             dataset = DatasetProvider.load(dataset_id=dataset_id, split=split)
@@ -112,6 +120,7 @@ class Scanner:
         self.attacks = tuple(attacks)
 
     def logged_in(self) -> bool:
+        import huggingface_hub
         try:
             huggingface_hub.whoami()
             return True
@@ -122,9 +131,11 @@ class Scanner:
         return self.logged_in() and self.model is not None and self.processor is not None and self.dataset is not None and len(self.attacks) > 0
 
     def run(self, progress_callback=None, batch_size: int = 16) -> ScanResult:
+        import torch
+
         if not self.ready():
             raise RuntimeError("Scanner is not ready. Please set token, model, dataset, and attacks first.")
-        
+
         assert self.dataset is not None
         x, y = self.dataset
 
@@ -204,7 +215,7 @@ class Scanner:
                     adv_confidence=adv_confidence
                 )
             )
-            
+
         return ScanResult(
             x=x,
             y=y,
@@ -217,6 +228,8 @@ class Scanner:
     # deprecated: run_no_batching is kept for backward compatibility, but it is recommended to use run() instead.
     # progress_callback won't work here, as it is not implemented correctly in this method
     def run_no_batching(self, progress_callback=None) -> ScanResult:
+        import torch
+
         if not self.ready():
             raise RuntimeError("Scanner is not ready. Please set token, model, dataset, and attacks first.")
 

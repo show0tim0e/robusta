@@ -1,7 +1,9 @@
-import numpy as np
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+from __future__ import annotations
 
-from vl_scanner.core.scanner import AttackResult, ScanResult
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from vl_scanner.core.scanner import AttackResult, ScanResult
 
 
 class Evaluator:
@@ -14,6 +16,9 @@ class Evaluator:
         }
 
     def evaluate(self, scan_result: ScanResult, progress_callback=None) -> dict:
+        import numpy as np
+        from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
+
         y_true = scan_result.y.numpy() # in Zahlenwerte die wahrenLabes
         y_pred_orig = scan_result.pred.numpy() # vor Angriff labels
         probs_orig = scan_result.confidence.numpy() #Konfidenz der vorhergesagten Labels
@@ -26,7 +31,7 @@ class Evaluator:
 
         attack_res: AttackResult #Typehint
         total = len(scan_result.results)
-        
+
         for i, attack_res in enumerate(scan_result.results): #falls man mehrere angriffe bewertet, dann mit for schleife alle durch
             attack_name = attack_res.attack_name
             attack_time_seconds = attack_res.attack_time_seconds
@@ -47,7 +52,7 @@ class Evaluator:
             prec = precision_score(y_true_filt, y_pred_adv_filt, average='macro', zero_division=0)
             rec = recall_score(y_true_filt, y_pred_adv_filt, average='macro', zero_division=0)
             f1 = f1_score(y_true_filt, y_pred_adv_filt, average='macro', zero_division=0)
-            #invertierung der Metriken um von Accuracy zu schaden zu rechnen
+            #invertierung der Metriken um von Accuracy zu schaden zu schaden
             inv_acc, inv_prec, inv_rec, inv_f1 = 1.0 - acc, 1.0 - prec, 1.0 - rec, 1.0 - f1
             composite_damage = inv_acc + inv_prec + inv_rec + inv_f1 #insgesamter damage max. 4
             conf_drop = float(np.mean(probs_orig_filt - probs_adv_filt)) #durchnitt des confidenzdrops berechnen und auf float ändern

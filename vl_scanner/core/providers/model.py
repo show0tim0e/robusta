@@ -1,27 +1,41 @@
-from typing import Any
+from __future__ import annotations
 
-import torch
-from torch.nn import Module
-from transformers import AutoImageProcessor, AutoModelForImageClassification
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    import torch
+    from torch.nn import Module
+
+    HFImageClassifier = Module
 
 
-class HFImageClassifier(Module):
+def _build_hf_image_classifier() -> type[Module]:
+    """Build the HFImageClassifier nn.Module subclass on first use.
+
+    Defers the torch import until the user actually loads a model.
     """
-    Adapter that makes Hugging Face image classification models
-    behave like a regular PyTorch classifier returning logits.
-    """
+    from torch.nn import Module
 
-    def __init__(self, model: Module) -> None:
-        super().__init__()
-        self.model = model
+    class HFImageClassifier(Module):
+        """
+        Adapter that makes Hugging Face image classification models
+        behave like a regular PyTorch classifier returning logits.
+        """
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        outputs = self.model(pixel_values=x)
-        return outputs.logits
+        def __init__(self, model: Module) -> None:
+            super().__init__()
+            self.model = model
 
-    @property
-    def config(self):
-        return self.model.config
+        def forward(self, x: torch.Tensor) -> torch.Tensor:
+            outputs = self.model(pixel_values=x)
+            return outputs.logits
+
+        @property
+        def config(self):
+            return self.model.config
+
+    return HFImageClassifier
+
 
 class ModelProvider:
 
@@ -33,6 +47,11 @@ class ModelProvider:
         dtype: torch.dtype | None = None,
         trust_remote_code: bool = False,
     ) -> tuple[Module, Any]:
+
+        import torch
+        from transformers import AutoImageProcessor, AutoModelForImageClassification
+
+        HFImageClassifier = _build_hf_image_classifier()
 
         kwargs: dict[str, Any] = {
             "trust_remote_code": trust_remote_code,

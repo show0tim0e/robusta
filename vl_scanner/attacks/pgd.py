@@ -1,11 +1,10 @@
-from typing import Any
+from __future__ import annotations
 
-import numpy as np
-import torch
-from art.attacks.evasion import ProjectedGradientDescent
-from art.estimators.classification import PyTorchClassifier
-from torch import Tensor, nn
-from torch.nn import Module
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from torch import Tensor
+    from torch.nn import Module
 
 from .base import Attack, AttackParameter
 
@@ -37,6 +36,12 @@ class PGD(Attack):
         num_iter: int = 40,
         **kwargs: Any,
     ) -> Tensor:
+        import numpy as np
+        import torch
+        from art.attacks.evasion import ProjectedGradientDescent
+        from art.estimators.classification import PyTorchClassifier
+        from torch import nn
+
         device = next(model.parameters()).device
 
         with torch.no_grad():
@@ -74,4 +79,3 @@ class PGD(Attack):
         )
 
         return torch.from_numpy(x_adv_np).to(device=device, dtype=x.dtype)
-

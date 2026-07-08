@@ -1,10 +1,10 @@
-from typing import Any
+from __future__ import annotations
 
-import numpy as np
-from art.attacks.evasion import TargetedUniversalPerturbation
-from art.estimators.classification import PyTorchClassifier
-from torch import Tensor, nn, torch
-from torch.nn import Module
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from torch import Tensor
+    from torch.nn import Module
 
 from .base import Attack, AttackParameter
 
@@ -16,7 +16,7 @@ class TUAP(Attack):
 
     @staticmethod
     def description() -> str:
-        return "Targeted Universal Adversarial Perturbation (TUAP) computes a single, input-independent perturbation that, when added to (almost) any input, causes the model to predict a specific target class. The perturbation is learned iteratively from a batch of representative inputs: for each sample that has not yet been successfully redirected, an internal, targeted attack (FGSM) is used to shift the joint perturbation toward the target class. It is then projected onto an Lp sphere with radius ‘eps’. Unlike PGD, the result is ‘universal’: the same perturbation works across many different inputs and can also be transferred to new, unseen samples."
+        return "Targeted Universal Adversarial Perturbation (TUAP) computes a single, input-independent perturbation that, when added to (almost) any input, causes the model to predict a specific target class. The perturbation is learned iteratively from a batch of representative inputs: for each sample that has not yet been successfully redirected, an internal, targeted attack (FGSM) is used to shift the joint perturbation toward the target class. It is then projected onto an Lp sphere with radius ‘eps’. Unlike PGD, the result is ‘universal’: the same perturbation works across many different inputs and can also transfer to new, unseen samples."
 
     @staticmethod
     def attack_parameters() -> list[AttackParameter]:
@@ -41,11 +41,17 @@ class TUAP(Attack):
         **kwargs: Any,
     ) -> Tensor:
 
+        import numpy as np
+        import torch
+        from art.attacks.evasion import TargetedUniversalPerturbation
+        from art.estimators.classification import PyTorchClassifier
+        from torch import nn
+
         device = next(model.parameters()).device
 
         with torch.no_grad():
             n_classes = model(x[:1].to(device)).shape[-1]
-        
+
         classifier = PyTorchClassifier(
             model=model,
             loss=nn.CrossEntropyLoss(),
