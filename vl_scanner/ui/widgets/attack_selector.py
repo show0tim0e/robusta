@@ -15,7 +15,7 @@ class AttackSelector(Horizontal):
     }
 
     #attack-list-container {
-        width: 40%;
+        width: 30%;
         height: 100%;
         border: round $accent;
         background: $surface;
@@ -28,7 +28,7 @@ class AttackSelector(Horizontal):
     }
 
     #attack-description-container {
-        width: 60%;
+        width: 70%;
         height: 100%;
         border: round $secondary;
         background: $surface;
