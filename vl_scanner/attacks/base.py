@@ -1,10 +1,13 @@
+from __future__ import annotations
+
 import inspect
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from torch import Tensor
-from torch.nn import Module
+if TYPE_CHECKING:
+    from torch import Tensor
+    from torch.nn import Module
 
 
 @dataclass(frozen=True)

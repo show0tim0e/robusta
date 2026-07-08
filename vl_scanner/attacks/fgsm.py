@@ -1,9 +1,10 @@
-from typing import Any
+from __future__ import annotations
 
-from art.attacks.evasion import FastGradientMethod
-from art.estimators.classification import PyTorchClassifier
-from torch import Tensor, nn, torch
-from torch.nn import Module
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from torch import Tensor
+    from torch.nn import Module
 
 from .base import Attack, AttackParameter
 
@@ -24,11 +25,16 @@ class FGSM(Attack):
     @staticmethod
     def generate(
         model: Module,
-            x: Tensor,
-            y: Tensor,
-            epsilon: float = 0.03,
-            **kwargs: Any
+        x: Tensor,
+        y: Tensor,
+        epsilon: float = 0.03,
+        **kwargs: Any
     ) -> Tensor:
+        import torch
+        from art.attacks.evasion import FastGradientMethod
+        from art.estimators.classification import PyTorchClassifier
+        from torch import nn
+
         # finds out on what device the model is running (GPU or CPU)
         device = next(model.parameters()).device
 
