@@ -38,17 +38,56 @@ def test_set_token():
     assert scanner.set_token(load_hf_token())
 
 
-def test_mnist_scan():
+def test_batching():
     scanner = Scanner()
 
-    assert scanner.set_model(model_id="fxmarty/resnet-tiny-mnist")
-    assert scanner.set_dataset(dataset_id="ylecun/mnist", size=50)
+    # mnist
+    # assert scanner.set_model(model_id="fxmarty/resnet-tiny-mnist")
+    # assert scanner.set_dataset(dataset_id="ylecun/mnist", size=10000)
+
+    # cifar-10
+    assert scanner.set_model(model_id="nateraw/vit-base-patch16-224-cifar10")
+    assert scanner.set_dataset(dataset_id="uoft-cs/cifar10", size=500)
+
+    # cifar-100
+    # assert scanner.set_model(model_id="Ahmed9275/Vit-Cifar100")
+    # assert scanner.set_dataset(dataset_id="uoft-cs/cifar100", size=500)
 
     scanner.set_attacks(
         [
             AttackConfig(
-                attack=TUAP,
-                params={"targeted_class": 0, "eps": 0.1, "norm": "inf", "delta": 0.2, "max_iter": 20, "attacker": "fgsm", "attacker_eps": 0.03},
+                attack=FGSM,
+                params={"epsilon": 0.03},
+            )
+        ]
+    )
+
+    print("Running scan with batching...")
+    scan_result = scanner.run()
+    process_scan_result(scan_result)
+
+    print("\n")
+
+    print("Running scan without batching...")
+    scan_result_no_batch = scanner.run_no_batching()
+    process_scan_result(scan_result_no_batch)
+
+
+def test_mnist_scan():
+    scanner = Scanner()
+
+    assert scanner.set_model(model_id="fxmarty/resnet-tiny-mnist")
+    assert scanner.set_dataset(dataset_id="ylecun/mnist", size=1000)
+
+    scanner.set_attacks(
+        [
+            # AttackConfig(
+            #     attack=TUAP,
+            #     params={"targeted_class": 0, "eps": 0.1, "norm": "inf", "delta": 0.2, "max_iter": 20, "attacker": "fgsm", "attacker_eps": 0.03},
+            # )
+            AttackConfig(
+                attack=FGSM,
+                params={"epsilon": 0.03},
             )
         ]
     )

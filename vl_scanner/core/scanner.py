@@ -121,7 +121,102 @@ class Scanner:
     def ready(self) -> bool:
         return self.logged_in() and self.model is not None and self.processor is not None and self.dataset is not None and len(self.attacks) > 0
 
-    def run(self, progress_callback=None) -> ScanResult:
+    def run(self, progress_callback=None, batch_size: int = 16) -> ScanResult:
+        if not self.ready():
+            raise RuntimeError("Scanner is not ready. Please set token, model, dataset, and attacks first.")
+        
+        assert self.dataset is not None
+        x, y = self.dataset
+
+        assert self.model is not None
+        device = next(self.model.parameters()).device
+
+        self.model.eval()
+
+        num_samples = len(x)
+
+        def update_progress(percent: float, message: str) -> None:
+            percent = max(0.0, min(1.0, percent))  # Clamp percent to [0.0, 1.0]
+
+            if progress_callback is not None:
+                progress_callback(percent, message)
+
+        pred = torch.empty(num_samples, dtype=torch.long)
+        confidence = torch.empty(num_samples, dtype=torch.float)
+
+        update_progress(0, "Normal Classification")
+
+        with torch.no_grad():
+            for start in range(0, num_samples, batch_size):
+                end = min(start + batch_size, num_samples)
+                x_batch = x[start:end].to(device)
+
+                logits = self.model(x_batch)
+                probs = torch.softmax(logits, dim=1)
+                batch_confidence, batch_pred = probs.max(dim=1)
+
+                pred[start:end] = batch_pred.cpu()
+                confidence[start:end] = batch_confidence.cpu()
+
+                update_progress((start + batch_size) / num_samples, "Running Normal Classification")
+
+                del x_batch, logits, probs, batch_confidence, batch_pred
+
+        results: list[AttackResult] = []
+
+        for attack_config in self.attacks:
+            update_progress(0, f"Running Attack: {attack_config.attack.name()}")
+
+            x_adv = torch.empty_like(x)
+            adv_pred = torch.empty_like(pred)
+            adv_confidence = torch.empty_like(confidence)
+
+            start_time = datetime.now()
+
+            for start in range(0, num_samples, batch_size):
+                end = min(start + batch_size, num_samples)
+
+                x_batch = x[start:end].to(device)
+                y_batch = y[start:end].to(device)
+
+                x_adv_batch = attack_config.attack.generate(self.model, x_batch, y_batch, **attack_config.params)
+
+                with torch.no_grad():
+                    adv_logits = self.model(x_adv_batch)
+                    adv_probs = torch.softmax(adv_logits, dim=1)
+                    batch_adv_confidence, batch_adv_pred = adv_probs.max(dim=1)
+
+                x_adv[start:end] = x_adv_batch.detach().cpu()
+                adv_pred[start:end] = batch_adv_pred.detach().cpu()
+                adv_confidence[start:end] = batch_adv_confidence.detach().cpu()
+
+                update_progress((start + batch_size) / num_samples, f"Running Attack: {attack_config.attack.name()}")
+
+                del x_batch, y_batch, x_adv_batch, adv_logits, adv_probs, batch_adv_confidence, batch_adv_pred
+
+            results.append(
+                AttackResult(
+                    attack_name=attack_config.attack.name(),
+                    attack_params=dict(attack_config.params),
+                    attack_time_seconds=(datetime.now() - start_time).total_seconds(),
+                    x_adv=x_adv,
+                    adv_pred=adv_pred,
+                    adv_confidence=adv_confidence
+                )
+            )
+            
+        return ScanResult(
+            x=x,
+            y=y,
+            pred=pred,
+            confidence=confidence,
+            results=results
+        )
+
+
+    # deprecated: run_no_batching is kept for backward compatibility, but it is recommended to use run() instead.
+    # progress_callback won't work here, as it is not implemented correctly in this method
+    def run_no_batching(self, progress_callback=None) -> ScanResult:
         if not self.ready():
             raise RuntimeError("Scanner is not ready. Please set token, model, dataset, and attacks first.")
 

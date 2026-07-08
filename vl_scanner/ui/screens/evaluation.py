@@ -28,8 +28,7 @@ class EvaluationScreen(Screen):
     Expects the dict returned by :class:`vl_scanner.assessment.evaluator.Evaluator`:
     a mapping of ``attack_name`` -> per-attack result containing
     ``extent_of_damage`` (with ``composite_score`` and ``metrics_detail``) and
-    ``attackers_effort`` (with ``attack_steps``, ``attack_time_seconds`` and
-    ``cpu_usage_percent``).
+    ``attackers_effort`` (with ``attack_steps`` and ``attack_time_seconds``).
     """
 
     DEFAULT_CSS = """
@@ -95,8 +94,7 @@ class EvaluationScreen(Screen):
             ("Inv. Macro F1", 14),
             ("Avg Conf Drop", 14),
             ("Attack Steps", 12),
-            ("Attack Time (s)", 14),
-            ("CPU (%)", 8),
+            ("Attack Time (s)", 15),
         ]
         for name, width in columns:
             table.add_column(name, width=width)
@@ -120,5 +118,4 @@ class EvaluationScreen(Screen):
                 _format(metrics.get("average_confidence_drop")),
                 str(effort.get("attack_steps", "N/A")),
                 _format(effort.get("attack_time_seconds")),
-                _format(effort.get("cpu_usage_percent")),
             )
