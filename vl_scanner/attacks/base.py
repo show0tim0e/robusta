@@ -21,7 +21,7 @@ class AttackParameter:
 
 
 class Attack(ABC):
-    registry: dict[str, type["Attack"]] = {}
+    registry: dict[str, type[Attack]] = {}
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         super().__init_subclass__(**kwargs)

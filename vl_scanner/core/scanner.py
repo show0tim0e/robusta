@@ -12,8 +12,6 @@ if TYPE_CHECKING:
     from torch.nn import Module
 
     from vl_scanner.attacks.base import Attack
-    from vl_scanner.core.providers.dataset import DatasetProvider
-    from vl_scanner.core.providers.model import ModelProvider
 
 
 @dataclass(slots=True, frozen=True)
@@ -84,8 +82,9 @@ class Scanner:
         if not self.logged_in():
             return False
 
-        from vl_scanner.core.providers.dataset import DatasetProvider
         import torch
+
+        from vl_scanner.core.providers.dataset import DatasetProvider
 
         try:
             dataset = DatasetProvider.load(dataset_id=dataset_id, split=split)

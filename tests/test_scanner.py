@@ -1,7 +1,6 @@
 from pathlib import Path
 
 from vl_scanner.attacks.fgsm import FGSM
-from vl_scanner.attacks.tuap import TUAP
 from vl_scanner.core.scanner import AttackConfig, Scanner, ScanResult
 
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from datasets import ClassLabel, Dataset, Image
+    from datasets import Dataset
 
 
 class DatasetProvider:
