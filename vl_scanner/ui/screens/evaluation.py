@@ -1,3 +1,6 @@
+import json
+from datetime import datetime
+from pathlib import Path
 from typing import Any
 
 from textual.app import ComposeResult
@@ -60,6 +63,7 @@ class EvaluationScreen(Screen):
     BINDINGS = [
         ("q", "quit_app", "Quit"),
         ("r", "restart", "Restart"),
+        ("e", "export", "Export"),
     ]
 
     def __init__(self, result: dict[str, dict[str, Any]]) -> None:
@@ -78,6 +82,14 @@ class EvaluationScreen(Screen):
 
     def action_restart(self) -> None:
         self.app.switch_screen("ScanConfigScreen")
+
+    def action_export(self) -> None:
+        export_dir = Path("export")
+        export_dir.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        output_path = export_dir / f"{timestamp}.json"
+        output_path.write_text(json.dumps(self.result, indent=2, default=str))
+        self.notify(f"Exported to {output_path}", title="Export")
 
     def on_mount(self) -> None:
         table = self.query_one("#eval-table", DataTable)
