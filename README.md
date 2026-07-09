@@ -27,14 +27,12 @@ git switch dev
 
 **Run the project (CPU):**
 ```bash
-uv sync
 uv run main.py
 ```
 
 **Run the project (CUDA 12.6, for GPU acceleration):**
 ```bash
-uv sync --extra cu126
-uv run main.py
+uv run main.py --extra cu126
 ```
 
 **Run the tests:**
