@@ -5,6 +5,8 @@ from PIL import Image
 from torchvision.transforms.functional import to_pil_image
 
 from vl_scanner.attacks.fgsm import FGSM
+from vl_scanner.attacks.pgd import PGD
+from vl_scanner.attacks.tuap import TUAP
 from vl_scanner.core.scanner import AttackConfig, Scanner
 
 
@@ -28,19 +30,61 @@ def test_export_scan_artifacts() -> None:
 
     scanner = Scanner()
 
-    assert scanner.set_model(model_id="nateraw/vit-base-patch16-224-cifar10")
-    assert scanner.set_dataset(dataset_id="uoft-cs/cifar10", size=100)
+    # assert scanner.set_model(model_id="fxmarty/resnet-tiny-mnist")
+    # assert scanner.set_dataset(dataset_id="ylecun/mnist", size=100)
+
+    # assert scanner.set_model(model_id="nateraw/vit-base-patch16-224-cifar10")
+    # assert scanner.set_dataset(dataset_id="uoft-cs/cifar10", size=100)
+
+    assert scanner.set_model(model_id="Ahmed9275/Vit-Cifar100")
+    assert scanner.set_dataset(dataset_id="uoft-cs/cifar100", size=100)
 
     scanner.set_attacks(
         [
+            # AttackConfig(
+            #     attack=FGSM,
+            #     params={"epsilon": 0.01}
+            # )
+
+            # AttackConfig(
+            #     attack=TUAP,
+            #     params={
+            #         "target_class": 0,
+            #         "eps": 0.3,
+            #         "delta": 0.4,
+            #         "max_iter": 20,
+            #         "attacker_eps": 0.4
+            #     }
+            # )
+
             AttackConfig(
-                attack=FGSM,
-                params={"epsilon": 0.01})
+                attack=PGD, params={
+                    "epsilon": 0.01,
+                    "alpha": 0.005,
+                    "num_iter": 10
+                }
+            )
         ]
     )
 
     scan = scanner.run()
     attack = scan.results[0]
+
+    accuracy = (scan.pred == scan.y).float().mean()
+    adv_accuracy = (attack.adv_pred == scan.y).float().mean()
+
+    avg_conf = scan.confidence.mean()
+    avg_adv_conf = attack.adv_confidence.mean()
+
+    print(f"\nAttack: {attack.attack_name}")
+    print(f"Size: {len(scan.x)}")
+    print(f"Params: {attack.attack_params}")
+    print(f"Attack Time: {attack.attack_time_seconds:.2f}s")
+    print(f"Accuracy:       {accuracy:.2%}")
+    print(f"Adv Accuracy:   {adv_accuracy:.2%}")
+    print(f"Confidence:     {avg_conf:.4f}")
+    print(f"Adv Confidence: {avg_adv_conf:.4f}")
+    print("\n")
 
     for index in range(len(scan.x)):
         sample_id = index + 1

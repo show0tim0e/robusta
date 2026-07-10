@@ -238,3 +238,6 @@ examples/models/**/
 
 # generated test artifacts
 artifacts/
+
+# generated exports
+export/

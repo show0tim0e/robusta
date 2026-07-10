@@ -5,9 +5,21 @@ from textual.containers import Horizontal, Vertical
 from textual.widgets import Button, Input
 
 # TODO: remove dev-mode defaults in the final version
-_DEV_MODEL_ID = "nateraw/vit-base-patch16-224-cifar10"
-_DEV_DATASET_ID = "uoft-cs/cifar10"
-_DEV_DATASET_SIZE = 50
+
+# mnist
+# _DEV_MODEL_ID = "fxmarty/resnet-tiny-mnist"
+# _DEV_DATASET_ID = "ylecun/mnist"
+# _DEV_DATASET_SIZE = 5000
+
+# cifar10
+# _DEV_MODEL_ID = "nateraw/vit-base-patch16-224-cifar10"
+# _DEV_DATASET_ID = "uoft-cs/cifar10"
+# _DEV_DATASET_SIZE = 2000
+
+# cifar100
+_DEV_MODEL_ID = "Ahmed9275/Vit-Cifar100"
+_DEV_DATASET_ID = "uoft-cs/cifar100"
+_DEV_DATASET_SIZE = 1000
 
 
 def _is_dev_mode() -> bool:

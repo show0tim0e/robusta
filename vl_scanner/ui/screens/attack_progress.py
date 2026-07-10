@@ -73,7 +73,7 @@ class AttackProgressScreen(Screen):
 
             yield ProgressBar(
                 total=100,
-                show_eta=False,
+                show_eta=True,
                 id="scan-bar",
                 classes="phase-bar",
             )
