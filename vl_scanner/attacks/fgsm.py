@@ -16,12 +16,13 @@ class FGSM(Attack):
 
     @staticmethod
     def description() -> str:
-        return ("Fast Gradient Sign Method (FGSM) is a simple and efficient adversarial attack that generates adversarial examples by adding "
-                "perturbations to the input data in the direction of the gradient of the loss with respect to the input. The perturbation is "
-                "scaled by a factor called epsilon, which controls the strength of the attack. FGSM is designed to be computationally efficient "
-                "and can be used to quickly evaluate the robustness of machine learning models against adversarial attacks.\n\n\n"
+        return ("Fast Gradient Sign Method (FGSM) is a simple and efficient adversarial attack that generates "
+                "adversarial examples by adding a perturbation to the input in the direction of the gradient of "
+                "the loss with respect to the input. The perturbation is scaled by a factor 'epsilon', which "
+                "controls the strength of the attack. FGSM is computationally efficient and is commonly used to quickly "
+                "evaluate the robustness of machine learning models against adversarial attacks.\n\n\n"
                 "Parameters:\n\n"
-                "epsilon (float):   Maximum allowed change to the original input.")
+                "epsilon (float):   Maximum allowed perturbation of the original input.")
 
     @staticmethod
     def attack_parameters() -> list[AttackParameter]:
