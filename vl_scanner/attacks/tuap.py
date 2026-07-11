@@ -16,7 +16,18 @@ class TUAP(Attack):
 
     @staticmethod
     def description() -> str:
-        return "Targeted Universal Adversarial Perturbation (TUAP) computes a single, input-independent perturbation that, when added to (almost) any input, causes the model to predict a specific target class. The perturbation is learned iteratively from a batch of representative inputs: for each sample that has not yet been successfully redirected, an internal, targeted attack (FGSM) is used to shift the joint perturbation toward the target class. It is then projected onto an Lp sphere with radius ‘eps’. Unlike PGD, the result is ‘universal’: the same perturbation works across many different inputs and can also transfer to new, unseen samples."
+        return ("Targeted Universal Adversarial Perturbation (TUAP) computes a single, input-independent perturbation that, "
+                "when added to (almost) any input, causes the model to predict a specific target class. The perturbation is "
+                "learned iteratively from a batch of representative inputs: for each sample that has not yet been successfully "
+                "redirected, an internal, targeted attack (FGSM) is used to shift the joint perturbation toward the target class. "
+                "It is then projected onto an Lp sphere with radius ‘eps’. Unlike PGD, the result is ‘universal’: the same "
+                "perturbation works across many different inputs and can also transfer to new, unseen samples.\n\n\n"
+                "Parameters:\n\n"
+                "target_class (int):   Target class into which the model should classify the input.\n\n"
+                "epsilon (float):   Maximum allowed pertubation to the original input.\n\n"
+                "delta (float):   Targeted success-rate (1-delta). The attack stops when the success-rate is exceeded.\n\n"
+                "max_iter (int):   Maximum number of iterations over the dataset when generating an universal pertubation.\n\n"
+                "attacker_eps (float):   Maximum pertubation in the internal attack (FGSM).")
 
     @staticmethod
     def attack_parameters() -> list[AttackParameter]:

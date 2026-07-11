@@ -16,7 +16,15 @@ class PGD(Attack):
 
     @staticmethod
     def description() -> str:
-        return "Projected Gradient Descent (PGD) is an iterative adversarial attack that generates adversarial examples by repeatedly applying small perturbations to the input data in the direction of the gradient of the loss with respect to the input. The perturbations are projected back onto a specified norm ball to ensure that they remain within a certain distance from the original input. PGD is considered a stronger attack than FGSM and is often used to evaluate the robustness of machine learning models against adversarial attacks."
+        return ("Projected Gradient Descent (PGD) is an iterative adversarial attack that generates adversarial examples by "
+                "repeatedly applying small perturbations to the input data in the direction of the gradient of the loss with "
+                "respect to the input. The perturbations are projected back onto a specified norm ball to ensure that they remain "
+                "within a certain distance from the original input. PGD is considered a stronger attack than FGSM and is often "
+                "used to evaluate the robustness of machine learning models against adversarial attacks.\n\n\n"
+                "Parameters:\n\n"
+                "epsilon (float):   Maximum allowed change to the original input.\n\n"
+                "alpha (float):   Magnitude added in each iteration.\n\n"
+                "num_iter (int):   Number of iterations.")
 
     @staticmethod
     def attack_parameters() -> list[AttackParameter]:
