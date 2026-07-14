@@ -1,0 +1,69 @@
+[project]
+name = "js2"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "adversarial-robustness-toolbox>=1.20.1",
+    "pytest>=9.1.0",
+    "pytest-asyncio",
+    "ruff>=0.15.17",
+    "textual>=8.2.7",
+    "torch>=2.12.0",
+    "torchvision>=0.27.0",
+    "transformers>=4.0.0",
+    "datasets>=3.0.0",
+    "textual-dev>=1.8.0",
+    "huggingface-hub>=0.34.0",
+]
+
+[project.optional-dependencies]
+cpu = [
+  "torch>=2.12.0",
+  "torchvision>=0.27.0",
+]
+cu126 = [
+  "torch>=2.12.0",
+  "torchvision>=0.27.0",
+]
+
+[tool.uv]
+conflicts = [
+  [
+    { extra = "cpu" },
+    { extra = "cu126" },
+  ],
+]
+package = true
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu126", extra = "cu126" },
+]
+torchvision = [
+  { index = "pytorch-cpu", extra = "cpu" },
+  { index = "pytorch-cu126", extra = "cu126" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[tool.ruff]
+line-length = 1000
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "B",
+    "UP"
+]
