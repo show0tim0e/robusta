@@ -23,23 +23,17 @@ class TUAP(Attack):
             "redirected, an internal targeted attack (FGSM) is used to update the shared perturbation toward the target class. "
             "The resulting perturbation is then projected onto an Lp sphere with radius 'epsilon'. Unlike PGD, the resulting "
             "perturbation is universal: the same perturbation works across many different inputs and can also transfer to "
-            "previously unseen samples.\n\n"
-            "Parameters:\n\n"
-            "target_class (int):   Target class that the model should predict for the perturbed input.\n\n"
-            "epsilon (float):   Maximum allowed perturbation of the original input.\n\n"
-            "delta (float):   Target success rate (1 - delta). The attack stops once this success rate is reached.\n\n"
-            "max_iter (int):   Maximum number of iterations over the dataset when generating a universal perturbation.\n\n"
-            "attacker_eps (float):   Maximum perturbation used by the internal attack (FGSM)."
+            "previously unseen samples."
         )
 
     @staticmethod
     def attack_parameters() -> list[AttackParameter]:
         return [
-            AttackParameter("target_class", int, 0),
-            AttackParameter("eps", float, 0.1),
-            AttackParameter("delta", float, 0.2),
-            AttackParameter("max_iter", int, 20),
-            AttackParameter("attacker_eps", float, 0.03)
+            AttackParameter("target_class", int, 0, description="Target class that the model should predict for the perturbed input."),
+            AttackParameter("eps", float, 0.1, description="Maximum allowed perturbation of the original input."),
+            AttackParameter("delta", float, 0.2, description="Target success rate (1 - delta). The attack stops once this success rate is reached."),
+            AttackParameter("max_iter", int, 20, description="Maximum number of iterations over the dataset when generating a universal perturbation."),
+            AttackParameter("attacker_eps", float, 0.03, description="Maximum perturbation used by the internal attack (FGSM)."),
         ]
 
     @staticmethod

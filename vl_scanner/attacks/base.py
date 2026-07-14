@@ -18,6 +18,7 @@ class AttackParameter:
     type: type
     default: Any = None
     optional: bool = False
+    description: str = ""
 
 
 class Attack(ABC):

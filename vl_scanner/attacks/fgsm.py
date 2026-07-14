@@ -20,13 +20,13 @@ class FGSM(Attack):
                 "adversarial examples by adding a perturbation to the input in the direction of the gradient of "
                 "the loss with respect to the input. The perturbation is scaled by a factor 'epsilon', which "
                 "controls the strength of the attack. FGSM is computationally efficient and is commonly used to quickly "
-                "evaluate the robustness of machine learning models against adversarial attacks.\n\n\n"
-                "Parameters:\n\n"
-                "epsilon (float):   Maximum allowed perturbation of the original input.")
+                "evaluate the robustness of machine learning models against adversarial attacks.")
 
     @staticmethod
     def attack_parameters() -> list[AttackParameter]:
-        return [AttackParameter("epsilon", float, 0.03)]
+        return [
+            AttackParameter("epsilon", float, 0.03, description="Maximum allowed perturbation of the original input."),
+        ]
 
     @staticmethod
     def generate(

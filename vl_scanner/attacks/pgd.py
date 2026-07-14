@@ -21,18 +21,14 @@ class PGD(Attack):
                 "respect to the input. After each iteration, the perturbation is projected back onto a specified norm ball "
                 "to ensure that it remains within a maximum distance ('epsilon') from the original input. PGD is generally "
                 "considered a stronger attack than FGSM and is widely used to evaluate the robustness of machine learning models "
-                "against adversarial attacks.\n\n\n"
-                "Parameters:\n\n"
-                "epsilon (float):   Maximum allowed perturbation of the original input.\n\n"
-                "alpha (float):   Step size used in each iteration.\n\n"
-                "num_iter (int):   Number of iterations.")
+                "against adversarial attacks.")
 
     @staticmethod
     def attack_parameters() -> list[AttackParameter]:
         return [
-            AttackParameter("epsilon", float, 0.03),
-            AttackParameter("alpha", float, 0.01),
-            AttackParameter("num_iter", int, 40)
+            AttackParameter("epsilon", float, 0.03, description="Maximum allowed perturbation of the original input."),
+            AttackParameter("alpha", float, 0.01, description="Step size used in each iteration."),
+            AttackParameter("num_iter", int, 40, description="Number of iterations."),
         ]
 
     @staticmethod

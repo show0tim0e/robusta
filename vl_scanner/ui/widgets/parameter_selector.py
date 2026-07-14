@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
-from textual.widgets import Input, Label, ListItem, ListView, TabbedContent
+from textual.widgets import Collapsible, Input, Label, ListItem, ListView, TabbedContent
 
 from vl_scanner.core.scanner import AttackConfig
 
@@ -32,11 +34,29 @@ class ParameterSelector(Horizontal):
 
     .parameter-row {
         height: auto;
-        margin-bottom: 1;
     }
 
     .parameter-row Input {
+        border: none;
+        height: 3;
+        padding: 1;
+    }
+
+    .parameter-block {
+        height: auto;
+        margin-bottom: 1;
         border: round $primary;
+        padding: 0 1;
+    }
+
+    .parameter-block Collapsible {
+        margin-top: 0;
+        border-top: none;
+        padding-bottom: 0;
+    }
+
+    .parameter-block Collapsible Label {
+        width: 100%;
     }
     """
 
@@ -120,9 +140,23 @@ class ParameterSelector(Horizontal):
                 type=input_type,
                 value=str(val) if val is not None else "",
             )
-            inp.border_title = param.name
             inp.param_name = param.name
-            container.mount(Horizontal(inp, classes="parameter-row"))
+
+            block_children: list = [Horizontal(inp, classes="parameter-row")]
+
+            if param.description:
+                block_children.append(
+                    Collapsible(
+                        Label(param.description),
+                        title="Description",
+                        collapsed=True,
+                        id=f"param-desc-{param.name}",
+                    )
+                )
+
+            block = Vertical(*block_children, classes="parameter-block")
+            block.border_title = param.name
+            container.mount(block)
 
     def on_input_changed(self, event: Input.Changed) -> None:
         """Called when any input value changes to sync it back to the scanner."""
