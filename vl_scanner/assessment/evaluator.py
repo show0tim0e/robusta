@@ -58,7 +58,7 @@ class Evaluator:
             conf_drop = float(np.mean(probs_orig_filt - probs_adv_filt)) #durchnitt des confidenzdrops berechnen und auf float ändern
 
             # Holt die Steps lokal, 0 als Fallback wenn ein Name falsch geschrieben wurde
-            attack_steps = self.attack_profiles.get(attack_name, 0)
+            attack_steps = self.attack_profiles.get(attack_name.lower(), 0)
 
             evaluation_results[attack_name] = {
                 "attack_art": attack_name,
