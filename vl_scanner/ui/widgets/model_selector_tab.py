@@ -168,6 +168,8 @@ class ModelSelector(Vertical):
         model_section.set_class(has_model, "ready")
         dataset_section.set_class(has_dataset, "ready")
 
+        self.query_one("#dataset_load_btn", Button).disabled = not has_model
+
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "token-btn":
             await self._handle_token()
@@ -279,6 +281,9 @@ class ModelSelector(Vertical):
         scanner = self.app.scanner
         if not scanner.token:
             self.notify("Not logged in. Paste your HF token and click 'Save Token' first.", severity="error")
+            return
+        if scanner.model is None:
+            self.notify("Please load a model first.", severity="error")
             return
 
         load_btn = self.query_one("#dataset_load_btn", Button)
