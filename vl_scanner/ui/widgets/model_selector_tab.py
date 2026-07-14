@@ -2,7 +2,7 @@ import sys
 
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
-from textual.widgets import Button, Input
+from textual.widgets import Button, Input, Label
 
 # TODO: remove dev-mode defaults in the final version
 
@@ -47,6 +47,11 @@ class ModelSelector(Vertical):
         width: 1fr;
     }
 
+    #dataset_size {
+        width: 12;
+        margin-left: 1;
+    }
+
     .input-row Button {
         width: 16;
         margin-left: 1;
@@ -62,6 +67,16 @@ class ModelSelector(Vertical):
 
     .section.ready {
         border: round $success;
+    }
+
+    #dataset-section {
+        height: auto;
+    }
+
+    .dataset-description {
+        margin-top: 1;
+        margin-left: 1;
+        text-style: dim;
     }
 
     #token-container {
@@ -83,6 +98,7 @@ class ModelSelector(Vertical):
         super().__init__()
         self._loaded_model_id = ""
         self._loaded_dataset_id = ""
+        self._loaded_dataset_size: int | None = None
 
     def _token_button_label(self) -> str:
         scanner = getattr(self.app, "scanner", None)
@@ -119,12 +135,23 @@ class ModelSelector(Vertical):
                         value=_DEV_DATASET_ID if dev else "",
                         id="dataset_id",
                     )
+                    yield Input(
+                        placeholder="Size",
+                        value=str(_DEV_DATASET_SIZE) if dev else "",
+                        id="dataset_size",
+                        type="integer",
+                        valid_empty=True,
+                    )
                     yield Button("Load", id="dataset_load_btn", variant="primary")
+                yield Label(
+                    "Size: Number of images to process, leave blank for all.",
+                    classes="dataset-description",
+                )
 
     def on_mount(self) -> None:
         self.query_one("#token-section", Vertical).border_title = "HuggingFace Token"
         self.query_one("#model-section", Vertical).border_title = "HuggingFace Model"
-        self.query_one("#dataset-section", Vertical).border_title = "HuggingFace Dataset"
+        self.query_one("#dataset-section", Vertical).border_title = "HuggingFace Dataset & Size"
         self._update_section_states()
 
     def _update_section_states(self) -> None:
@@ -232,7 +259,21 @@ class ModelSelector(Vertical):
         if not dataset_val:
             self.notify("Please enter a dataset ID first.", severity="error")
             return
-        if dataset_val == self._loaded_dataset_id:
+
+        size_input = self.query_one("#dataset_size", Input)
+        size_val = size_input.value.strip()
+        size: int | None = None
+        if size_val:
+            try:
+                size = int(size_val)
+            except ValueError:
+                self.notify("Dataset size must be a positive integer.", severity="error")
+                return
+            if size <= 0:
+                self.notify("Dataset size must be a positive integer.", severity="error")
+                return
+
+        if dataset_val == self._loaded_dataset_id and size == self._loaded_dataset_size:
             return
 
         scanner = self.app.scanner
@@ -246,7 +287,7 @@ class ModelSelector(Vertical):
 
         self.notify(f"Loading dataset '{dataset_val}'...", severity="information")
         worker = self.run_worker(
-            lambda: scanner.set_dataset(dataset_id=dataset_val, size=(_DEV_DATASET_SIZE if _is_dev_mode() else None)),  # TODO: remove hardcoded size in final version
+            lambda: scanner.set_dataset(dataset_id=dataset_val, size=size),
             thread=True,
             name="load_dataset",
             exclusive=True,
@@ -261,6 +302,7 @@ class ModelSelector(Vertical):
 
         if success and scanner.dataset is not None:
             self._loaded_dataset_id = dataset_val
+            self._loaded_dataset_size = size
             load_btn.label = "Change Dataset"
             load_btn.disabled = False
             self.notify(f"Dataset '{dataset_val}' loaded.", severity="information")
