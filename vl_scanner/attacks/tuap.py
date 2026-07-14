@@ -12,7 +12,7 @@ from .base import Attack, AttackParameter
 class TUAP(Attack):
     @staticmethod
     def name() -> str:
-        return "tuap"
+        return "TUAP"
 
     @staticmethod
     def description() -> str:

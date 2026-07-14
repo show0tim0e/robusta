@@ -12,7 +12,7 @@ from .base import Attack, AttackParameter
 class PGD(Attack):
     @staticmethod
     def name() -> str:
-        return "pgd"
+        return "PGD"
 
     @staticmethod
     def description() -> str:

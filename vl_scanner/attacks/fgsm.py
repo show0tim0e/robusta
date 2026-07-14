@@ -12,7 +12,7 @@ from .base import Attack, AttackParameter
 class FGSM(Attack):
     @staticmethod
     def name() -> str:
-        return "fgsm"
+        return "FGSM"
 
     @staticmethod
     def description() -> str:
