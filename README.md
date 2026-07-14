@@ -80,8 +80,8 @@ pytest
 | https://huggingface.co/datasets/uoft-cs/cifar100 | https://huggingface.co/Ahmed9275/Vit-Cifar100 | More challenging benchmark with a higher misclassification rate under adversarial attacks |
 
 ## Authors
-Miran  
-Kilian  
-Hassan  
-Cedrik  
-Tim  
+Miran Zwick  
+Kilian Alexander Weise  
+Hassan Hotait  
+Cedrik Urbank  
+Tim Leon Metz  
