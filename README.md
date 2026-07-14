@@ -1,10 +1,18 @@
 # Development of a Framework for Vulnerability Scanning of Machine Learning and Deep Learning Models
 
 ## Description
-VL Scanner is a modular framework for analyzing the robustness of PyTorch models against adversarial attacks in the field of image classification.
+This project aimed at implementing a Vulnerability scanner for AI/ML-Models, that evaluates the robustness of image classification models against several adversarial machine learning attacks. The Scanner automatically runs a configurable set of attacks (FGSM, PGD, TUAP) against a model and test dataset selected by the user, then quantifies the resulting damage and estimates the attacker's effort. It also provides a risk classification, providing an interpretable assessment of the model's vulnerabilities. Models are loaded via HuggingFace, and the scanner is operated through a terminal user interface (TUI).
 
-## Project structure
-TODO
+## Project Structure
+
+The scanner is organized into five core components:
+
+- **`core/scanner`** - central orchestrator class that coordinates the entire scan process (loading model/dataset, running attacks, collecting results)
+- **`attacks/`** - attack implementations (FGSM, PGD, TUAP) built on a shared abstract base class; new attacks are registered automatically and become available system-wide without further changes
+- **`core/providers/`** - loading of models (HuggingFace) and datasets; models are wrapped by an adapter to expose a unified interface
+- **`assessment/`** - evaluation logic; computes damage and effort metrics from scan results and derives a risk classification
+- **`ui/`** - terminal user interface, communicates exclusively with the scanner and has no direct access to the underlying components
+
 
 ## Installation
 ### Prerequisites
@@ -75,7 +83,7 @@ pytest
 
 | Dataset | Model | Expected outcome |
 |-|-|-|
-| https://huggingface.co/datasets/ylecun/mnist | https://huggingface.co/fxmarty/resnet-tiny-mnist | Pipeline test, very high susceptibility to FGSM/PGD attacks, limited semantic significance |
+| https://huggingface.co/datasets/ylecun/mnist | https://huggingface.co/fxmarty/resnet-tiny-mnist | Pipeline test, fast scan time but limited susceptibility to FGSM because of small number of categories, limited semantic significance |
 | https://huggingface.co/datasets/uoft-cs/cifar10 | https://huggingface.co/nateraw/vit-base-patch16-224-cifar10 | Standard benchmark for adversarial robustness |
 | https://huggingface.co/datasets/uoft-cs/cifar100 | https://huggingface.co/Ahmed9275/Vit-Cifar100 | More challenging benchmark with a higher misclassification rate under adversarial attacks |
 
