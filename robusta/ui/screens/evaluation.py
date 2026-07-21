@@ -28,7 +28,7 @@ def _etsi_risk_level(composite_score: float | None) -> str:
 class EvaluationScreen(Screen):
     """Screen that displays the evaluation results in a table.
 
-    Expects the dict returned by :class:`vl_scanner.assessment.evaluator.Evaluator`:
+    Expects the dict returned by :class:`robusta.assessment.evaluator.Evaluator`:
     a mapping of ``attack_name`` -> per-attack result containing
     ``extent_of_damage`` (with ``composite_score`` and ``metrics_detail``) and
     ``attackers_effort`` (with ``attack_steps`` and ``attack_time_seconds``).

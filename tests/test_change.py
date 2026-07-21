@@ -1,4 +1,4 @@
-from vl_scanner.core.scanner import Scanner
+from robusta.core.scanner import Scanner
 
 
 def test_model():

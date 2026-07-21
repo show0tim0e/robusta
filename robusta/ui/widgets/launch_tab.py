@@ -76,5 +76,5 @@ class LaunchTab(Vertical):
             await self._launch()
 
     async def _launch(self) -> None:
-        from vl_scanner.ui.screens.attack_progress import AttackProgressScreen
+        from robusta.ui.screens.attack_progress import AttackProgressScreen
         self.app.push_screen(AttackProgressScreen(self.app.scanner))

@@ -2,10 +2,10 @@ from textual.app import ComposeResult
 from textual.screen import Screen
 from textual.widgets import Footer, Header, TabbedContent, TabPane
 
-from vl_scanner.ui.widgets.attack_selector import AttackSelector
-from vl_scanner.ui.widgets.launch_tab import LaunchTab
-from vl_scanner.ui.widgets.model_selector_tab import ModelSelector
-from vl_scanner.ui.widgets.parameter_selector import ParameterSelector
+from robusta.ui.widgets.attack_selector import AttackSelector
+from robusta.ui.widgets.launch_tab import LaunchTab
+from robusta.ui.widgets.model_selector_tab import ModelSelector
+from robusta.ui.widgets.parameter_selector import ParameterSelector
 
 
 class ScanConfigScreen(Screen):

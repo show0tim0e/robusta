@@ -6,9 +6,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import json
 from pathlib import Path
 
-from vl_scanner.assessment.evaluator import Evaluator
-from vl_scanner.attacks.fgsm import FGSM
-from vl_scanner.core.scanner import AttackConfig, Scanner
+from robusta.assessment.evaluator import Evaluator
+from robusta.attacks.fgsm import FGSM
+from robusta.core.scanner import AttackConfig, Scanner
 
 
 def load_hf_token(path: str = ".venv.local") -> str:

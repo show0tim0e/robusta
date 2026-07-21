@@ -4,10 +4,10 @@ from pathlib import Path
 from PIL import Image
 from torchvision.transforms.functional import to_pil_image
 
-from vl_scanner.attacks.fgsm import FGSM
-from vl_scanner.attacks.pgd import PGD
-from vl_scanner.attacks.tuap import TUAP
-from vl_scanner.core.scanner import AttackConfig, Scanner
+from robusta.attacks.fgsm import FGSM
+from robusta.attacks.pgd import PGD
+from robusta.attacks.tuap import TUAP
+from robusta.core.scanner import AttackConfig, Scanner
 
 
 def _to_png(image, path) -> None:

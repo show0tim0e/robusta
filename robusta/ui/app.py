@@ -1,9 +1,9 @@
 from textual.app import App
 
-from vl_scanner.ui.screens import AttackProgressScreen, ScanConfigScreen
+from robusta.ui.screens import AttackProgressScreen, ScanConfigScreen
 
 
-class VLScannerApp(App):
+class RobustaApp(App):
     SCREENS = {
         "AttackProgressScreen": AttackProgressScreen,
         "ScanConfigScreen": ScanConfigScreen
@@ -11,7 +11,7 @@ class VLScannerApp(App):
 
     def __init__(self) -> None:
         super().__init__()
-        from vl_scanner.core import Scanner
+        from robusta.core import Scanner
         self.scanner = Scanner()
 
     def on_mount(self) -> None:

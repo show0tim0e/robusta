@@ -4,7 +4,7 @@ from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.widgets import Collapsible, Input, Label, ListItem, ListView, TabbedContent
 
-from vl_scanner.core.scanner import AttackConfig
+from robusta.core.scanner import AttackConfig
 
 
 class ParameterSelector(Horizontal):

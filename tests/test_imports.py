@@ -1,4 +1,4 @@
-def test_import_vl_scanner():
+def test_import_robusta():
     """Basic test to verify the module can be imported."""
-    import vl_scanner
-    assert vl_scanner is not None
+    import robusta
+    assert robusta is not None

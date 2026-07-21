@@ -1,8 +1,8 @@
-from vl_scanner.ui import VLScannerApp
+from robusta.ui import RobustaApp
 
 
 def main():
-    app = VLScannerApp()
+    app = RobustaApp()
     app.run()
 
 if __name__ == "__main__":

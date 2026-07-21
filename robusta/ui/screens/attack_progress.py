@@ -5,7 +5,7 @@ from textual.containers import Vertical
 from textual.screen import Screen
 from textual.widgets import Footer, Header, Label, LoadingIndicator, ProgressBar
 
-from vl_scanner.assessment.evaluator import Evaluator
+from robusta.assessment.evaluator import Evaluator
 
 
 class AttackProgressScreen(Screen):
@@ -241,7 +241,7 @@ class AttackProgressScreen(Screen):
             severity="information",
         )
 
-        from vl_scanner.ui.screens.evaluation import EvaluationScreen
+        from robusta.ui.screens.evaluation import EvaluationScreen
 
         self.app.push_screen(
             EvaluationScreen(

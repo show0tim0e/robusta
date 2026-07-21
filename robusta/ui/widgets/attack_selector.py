@@ -2,8 +2,8 @@ from textual.app import ComposeResult
 from textual.containers import Container, Horizontal, VerticalScroll
 from textual.widgets import Label, SelectionList
 
-from vl_scanner.attacks import Attack
-from vl_scanner.core.scanner import AttackConfig
+from robusta.attacks import Attack
+from robusta.core.scanner import AttackConfig
 
 
 class AttackSelector(Horizontal):
@@ -52,7 +52,7 @@ class AttackSelector(Horizontal):
             self.query_one("#attack-description", Label).update(first_attack.description())
 
     def compose(self) -> ComposeResult:
-        from vl_scanner.attacks import ensure_loaded
+        from robusta.attacks import ensure_loaded
         ensure_loaded()
 
         # View 1: The Attack List
@@ -87,7 +87,7 @@ class AttackSelector(Horizontal):
 
         self.app.scanner.set_attacks(configs)
 
-        from vl_scanner.ui.widgets.launch_tab import LaunchTab
+        from robusta.ui.widgets.launch_tab import LaunchTab
         try:
             self.screen.query_one(LaunchTab).refresh_status()
         except Exception:

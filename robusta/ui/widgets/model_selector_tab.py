@@ -319,7 +319,7 @@ class ModelSelector(Vertical):
             self.notify(f"Failed to load dataset '{dataset_val}'.", severity="error")
 
     def _refresh_launch_tab(self) -> None:
-        from vl_scanner.ui.widgets.launch_tab import LaunchTab
+        from robusta.ui.widgets.launch_tab import LaunchTab
         try:
             self.screen.query_one(LaunchTab).refresh_status()
         except Exception:

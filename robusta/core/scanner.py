@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from torch import Tensor
     from torch.nn import Module
 
-    from vl_scanner.attacks.base import Attack
+    from robusta.attacks.base import Attack
 
 
 @dataclass(slots=True, frozen=True)
@@ -65,7 +65,7 @@ class Scanner:
         if not self.logged_in():
             return False
 
-        from vl_scanner.core.providers.model import ModelProvider
+        from robusta.core.providers.model import ModelProvider
 
         try:
             model, processor = ModelProvider.load(model_id=model_id, device=device, dtype=dtype, trust_remote_code=trust_remote_code)
@@ -84,7 +84,7 @@ class Scanner:
 
         import torch
 
-        from vl_scanner.core.providers.dataset import DatasetProvider
+        from robusta.core.providers.dataset import DatasetProvider
 
         try:
             dataset = DatasetProvider.load(dataset_id=dataset_id, split=split)

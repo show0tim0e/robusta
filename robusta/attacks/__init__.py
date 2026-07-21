@@ -7,7 +7,7 @@ _LOADED = False
 
 def ensure_loaded() -> None:
     """Import concrete attack modules so they register in Attack.registry
-    and become available as ``vl_scanner.attacks.FGSM`` etc."""
+    and become available as ``robusta.attacks.FGSM`` etc."""
     global _LOADED
     if _LOADED:
         return

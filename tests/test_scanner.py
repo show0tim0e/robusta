@@ -1,7 +1,7 @@
 from pathlib import Path
 
-from vl_scanner.attacks.fgsm import FGSM
-from vl_scanner.core.scanner import AttackConfig, Scanner, ScanResult
+from robusta.attacks.fgsm import FGSM
+from robusta.core.scanner import AttackConfig, Scanner, ScanResult
 
 
 def load_hf_token(path: str = ".venv.local") -> str:
