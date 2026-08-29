@@ -100,6 +100,26 @@ Flags:
 
 The CLI is JSON-only: status lines go to stderr and the full report is written to the path configured by `output`. Exit code `0` on success, `2` on configuration errors, `1` on runtime errors.
 
+### Python API
+
+The same logic is exposed as a single function for embedding in other tools:
+
+```python
+import robusta
+
+# Returns the report dict (also writes JSON to the path configured in config.toml)
+report = robusta.run(
+    "config.toml",
+    output="results.json",   # optional, overrides TOML
+    batch_size=16,            # optional, overrides TOML
+    device="cuda",            # optional, no default override
+    quiet=False,              # suppress status messages on stderr
+)
+print(report["attacks"]["FGSM"]["scan"]["adv_accuracy"])
+```
+
+Errors are raised as `robusta.ConfigError` (a `ValueError` subclass). The exception carries an `is_config_error` flag — `True` for problems with the TOML, `False` for runtime failures (HF login, model/dataset load, file write).
+
 ### Hugging Face token
 
 The CLI never reads a token from the config file. Set it in your environment before running:
@@ -110,6 +130,26 @@ robusta config.toml
 ```
 
 To use a different env var, add `hf_token_env = "MY_TOKEN"` to the TOML.
+
+## Notebook UI
+
+A thin marimo notebook lives at [`notebooks/scan.py`](notebooks/scan.py) and edits `config.toml` interactively, then calls `robusta.run(...)` on click. The notebook is a single-file wrapper around the public API — no scanner, attack, or assessment logic is duplicated.
+
+[![Open in molab](https://marimo.io/molab-shield.svg)](https://molab.marimo.io/github/<user>/<repo>/blob/main/notebooks/scan.py)
+
+Replace `<user>/<repo>` with the GitHub mirror of this project. In molab:
+
+1. Open the secrets tab (�) and add `HF_TOKEN=<your-token>` — this is loaded into `os.environ` automatically.
+2. Edit the TOML in the widget.
+3. Click **Run scan**.
+
+Locally:
+
+```bash
+uv run marimo edit notebooks/scan.py
+```
+
+Dependencies (`marimo`, `marimo-toml-editor`, `tomli-w`) live in `[dependency-groups].dev` and are only required for the notebook.
 
 ## Configuration schema
 

@@ -1,0 +1,41 @@
+{
+  "config_path": "/private/var/folders/s8/jb01m9v913b8n4tllxhl0_6w0000gn/T/tmpro5la18m.toml",
+  "model": "nateraw/vit-base-patch16-224-cifar10",
+  "dataset": "uoft-cs/cifar10",
+  "split": "test",
+  "size": 200,
+  "streaming": true,
+  "batch_size": 16,
+  "attacks": {
+    "FGSM": {
+      "params": {
+        "epsilon": 0.03
+      },
+      "scan": {
+        "clean_accuracy": 0.9850000143051147,
+        "adv_accuracy": 0.6800000071525574,
+        "avg_confidence": 0.9842438697814941,
+        "avg_adv_confidence": 0.9246205687522888,
+        "attack_time_seconds": 56.818864,
+        "num_samples": 200
+      },
+      "evaluation": {
+        "attack_art": "FGSM",
+        "extent_of_damage": {
+          "composite_score": 1.2113782628078114,
+          "metrics_detail": {
+            "inverted_accuracy": 0.30964467005076146,
+            "inverted_macro_precision": 0.29579103544660823,
+            "inverted_macro_recall": 0.29496660549329046,
+            "inverted_macro_f1": 0.3109759518171511,
+            "average_confidence_drop": 0.062403030693531036
+          }
+        },
+        "attackers_effort": {
+          "attack_steps": 5,
+          "attack_time_seconds": 56.818864
+        }
+      }
+    }
+  }
+}

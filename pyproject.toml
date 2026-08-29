@@ -28,6 +28,13 @@ cu126 = [
   "torchvision>=0.27.0",
 ]
 
+[dependency-groups]
+dev = [
+    "marimo>=0.23.14",
+    "marimo-toml-editor>=0.1.0",
+    "tomli-w>=1.0.0",
+]
+
 [tool.uv]
 conflicts = [
   [

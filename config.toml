@@ -1,0 +1,25 @@
+model = "nateraw/vit-base-patch16-224-cifar10"
+dataset = "uoft-cs/cifar10"
+output = "results.json"
+split = "test"
+size = 200
+streaming = true
+batch_size = 16
+
+[attack.FGSM]
+enabled = true
+epsilon = 0.03
+
+[attack.PGD]
+enabled = false
+epsilon = 0.03
+alpha = 0.01
+num_iter = 40
+
+[attack.TUAP]
+enabled = false
+target_class = 0
+eps = 0.1
+delta = 0.2
+max_iter = 20
+attacker_eps = 0.03
