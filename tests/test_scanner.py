@@ -37,6 +37,40 @@ def test_set_token():
     assert scanner.set_token(load_hf_token())
 
 
+def test_set_dataset_streaming_requires_size():
+    scanner = Scanner()
+
+    assert not scanner.set_dataset("ylecun/mnist", streaming=True)
+
+
+def test_streaming_take_sample():
+    import datasets
+    import PIL.Image
+
+    from robusta.core.providers.dataset import DatasetProvider
+
+    features = datasets.Features(
+        {
+            "image": datasets.Image(),
+            "label": datasets.ClassLabel(names=["a", "b"]),
+        }
+    )
+    iterable = datasets.Dataset.from_dict(
+        {
+            "image": [PIL.Image.new("RGB", (8, 8)) for _ in range(20)],
+            "label": [i % 2 for i in range(20)],
+        },
+        features=features,
+    ).to_iterable_dataset()
+
+    progress = []
+    images, labels = DatasetProvider.take_sample(iterable, 5, progress_callback=lambda p, m: progress.append((p, m)))
+
+    assert len(images) == len(labels) == 5
+    assert len(progress) == 5
+    assert progress[-1][0] == 1.0
+
+
 def test_batching():
     scanner = Scanner()
 

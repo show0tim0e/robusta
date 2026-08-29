@@ -3,15 +3,36 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from datasets import Dataset
+    from collections.abc import Callable
+
+    from datasets import Dataset, IterableDataset
 
 
 class DatasetProvider:
     @staticmethod
-    def load(dataset_id: str, *, split: str = "test") -> Dataset:
+    def load(dataset_id: str, *, split: str = "test", streaming: bool = False) -> Dataset | IterableDataset:
         from datasets import load_dataset
 
-        return load_dataset(dataset_id, split=split)
+        return load_dataset(dataset_id, split=split, streaming=streaming)
+
+    @staticmethod
+    def take_sample(dataset: IterableDataset, size: int, *, buffer_size: int = 1000, progress_callback: Callable[[float, str], None] | None = None) -> tuple[list[Any], list[Any]]:
+        # Streaming datasets have no random access, so sampling is only
+        # approximate: a rolling shuffle buffer, then take the first `size`.
+        image_column = DatasetProvider.image_column(dataset)
+        label_column = DatasetProvider.label_column(dataset)
+
+        images: list[Any] = []
+        labels: list[Any] = []
+
+        for i, example in enumerate(dataset.shuffle(buffer_size=buffer_size).take(size)):
+            images.append(example[image_column])
+            labels.append(example[label_column])
+
+            if progress_callback is not None:
+                progress_callback((i + 1) / size, "Streaming dataset")
+
+        return images, labels
 
     @staticmethod
     def image_column(dataset: Dataset) -> str:

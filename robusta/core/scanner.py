@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import random
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import TYPE_CHECKING, Any
@@ -78,7 +78,10 @@ class Scanner:
 
         return True
 
-    def set_dataset(self, dataset_id: str, *, split: str = "test", size: int | None = None) -> bool:
+    def set_dataset(self, dataset_id: str, *, split: str = "test", size: int | None = None, streaming: bool = False, progress_callback: Callable[[float, str], None] | None = None) -> bool:
+        if streaming and size is None:
+            return False
+
         if not self.logged_in():
             return False
 
@@ -87,21 +90,28 @@ class Scanner:
         from robusta.core.providers.dataset import DatasetProvider
 
         try:
-            dataset = DatasetProvider.load(dataset_id=dataset_id, split=split)
+            dataset = DatasetProvider.load(dataset_id=dataset_id, split=split, streaming=streaming)
 
-            if size is not None:
-                random_indices = random.sample(range(len(dataset)), size)
+            if streaming:
+                assert size is not None
+                images, labels = DatasetProvider.take_sample(dataset, size, progress_callback=progress_callback)
+            else:
+                if size is not None:
+                    random_indices = random.sample(range(len(dataset)), size)
 
-                dataset = dataset.select(random_indices)
+                    dataset = dataset.select(random_indices)
 
-            images = DatasetProvider.get_images(dataset)
-            labels = DatasetProvider.get_labels(dataset)
+                images = DatasetProvider.get_images(dataset)
+                labels = DatasetProvider.get_labels(dataset)
 
             if len(images) != len(labels):
                 return False
 
             if self.processor is None:
                 return False
+
+            if progress_callback is not None:
+                progress_callback(1.0, "Encoding dataset")
 
             encoded = self.processor(images=list(images), return_tensors="pt", do_normalize=True)
 

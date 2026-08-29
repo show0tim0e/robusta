@@ -7,14 +7,16 @@ dependencies = [
     "pytest>=9.1.0",
     "pytest-asyncio",
     "ruff>=0.15.17",
-    "textual>=8.2.7",
     "torch>=2.12.0",
     "torchvision>=0.27.0",
     "transformers>=4.0.0",
     "datasets>=3.0.0",
-    "textual-dev>=1.8.0",
     "huggingface-hub>=0.34.0",
+    "ty>=0.0.65",
 ]
+
+[project.scripts]
+robusta = "robusta.cli:main"
 
 [project.optional-dependencies]
 cpu = [
